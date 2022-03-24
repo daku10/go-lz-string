@@ -28,13 +28,17 @@ func TestCompress(t *testing.T) {
 			arg:  "🍎",
 			want: string([]rune{'輆', '', 0xda00}),
 		},
+		{
+			arg:  "🍎🍇",
+			want: string([]rune{0x8f06, 0xe397, 0xde9c, 0x5f68}),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
 			reader, err := Compress(strings.NewReader(tt.arg))
 			assert.Nil(t, err)
 			b, err := reader, err
-			assert.Equal(t, b, tt.want)
+			assert.Equal(t, tt.want, b)
 		})
 	}
 }
