@@ -11,21 +11,21 @@ func Decompress() {
 
 }
 
-func Compress(reader io.Reader) (io.Reader, error) {
+func Compress(reader io.Reader) (string, error) {
 	s, _ := io.ReadAll(reader)
-	res, err := compressCore(string(s), 16, func(i int) string {
+	res, err := _compress(string(s), 16, func(i int) string {
 		return string(utf16.Decode([]uint16{uint16(i)}))
 	})
-	return strings.NewReader(res), err
+	return res, err
 }
 
 type GetCharFunc func(i int) string
 
-func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) (string, error) {
+func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) (string, error) {
 	var i, value int
-	contextDictionary := make(map[string]int)
-	contextDictionaryToCreate := make(map[string]bool)
-	var contextC, contextWC, contextW string
+	contextDictionary := make(map[rune]int)
+	contextDictionaryToCreate := make(map[rune]bool)
+	var contextC, contextWC, contextW rune
 	contextEnLargeIn := 2
 	contextDictSize := 3
 	contextNumBits := 2
@@ -35,7 +35,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 	var ii int
 	uncompressedRune := utf16.Encode([]rune(uncompressed))
 	for ii = 0; ii < len(uncompressedRune); ii++ {
-		contextC = string(uncompressedRune[ii])
+		contextC = rune(uncompressedRune[ii])
 		if _, ok := contextDictionary[contextC]; !ok {
 			contextDictionary[contextC] = contextDictSize
 			contextDictSize++
@@ -46,7 +46,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 			contextW = contextWC
 		} else {
 			if _, ok := contextDictionaryToCreate[contextW]; ok {
-				if charCodeAtZero(contextW) < 256 {
+				if contextW < 256 {
 					for i = 0; i < contextNumBits; i++ {
 						contextDataVal = contextDataVal << 1
 						if contextDataPosition == bitsPerChar-1 {
@@ -57,7 +57,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 							contextDataPosition++
 						}
 					}
-					value = int(charCodeAtZero(contextW))
+					value = int(contextW)
 					for i = 0; i < 8; i++ {
 						contextDataVal = (contextDataVal << 1) | (value & 1)
 						if contextDataPosition == bitsPerChar-1 {
@@ -82,7 +82,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 						}
 						value = 0
 					}
-					value = int(charCodeAtZero(contextW))
+					value = int(contextW)
 					for i = 0; i < 16; i++ {
 						contextDataVal = (contextDataVal << 1) | (value & 1)
 						if contextDataPosition == bitsPerChar-1 {
@@ -126,9 +126,9 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 		}
 	}
 
-	if contextW != "" {
+	if len(uncompressed) != 0 {
 		if _, ok := contextDictionaryToCreate[contextW]; ok {
-			if charCodeAtZero(contextW) < 256 {
+			if contextW < 256 {
 				for i = 0; i < contextNumBits; i++ {
 					contextDataVal = contextDataVal << 1
 					if contextDataPosition == bitsPerChar-1 {
@@ -139,7 +139,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 						contextDataPosition++
 					}
 				}
-				value = int(charCodeAtZero(contextW))
+				value = int(contextW)
 				for i = 0; i < 8; i++ {
 					contextDataVal = (contextDataVal << 1) | (value & 1)
 					if contextDataPosition == bitsPerChar-1 {
@@ -164,7 +164,7 @@ func compressCore(uncompressed string, bitsPerChar int, getCharFromInt GetCharFu
 					}
 					value = 0
 				}
-				value = int(charCodeAtZero(contextW))
+				value = int(contextW)
 				for i = 0; i < 16; i++ {
 					contextDataVal = (contextDataVal << 1) | (value & 1)
 					if contextDataPosition == bitsPerChar-1 {
