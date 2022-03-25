@@ -41,7 +41,13 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 			contextDictSize++
 			contextDictionaryToCreate[contextC] = true
 		}
-		contextWC = contextW + contextC
+		tmp := utf16.DecodeRune(contextW, contextC)
+		if tmp == '\uFFFD' {
+			contextWC = contextW + contextC
+		} else {
+			contextWC = tmp
+		}
+		// contextWC = contextW + contextC
 		if _, ok := contextDictionary[contextWC]; ok {
 			contextW = contextWC
 		} else {
