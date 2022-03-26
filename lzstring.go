@@ -1,6 +1,7 @@
 package lzstring
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"strings"
@@ -14,7 +15,7 @@ func Decompress() {
 func Compress(reader io.Reader) (string, error) {
 	s, _ := io.ReadAll(reader)
 	res, err := _compress(string(s), 16, func(i int) string {
-		return string(utf16.Decode([]uint16{uint16(i)}))
+		return string([]rune{rune(i)})
 	})
 	return res, err
 }
@@ -23,9 +24,10 @@ type GetCharFunc func(i int) string
 
 func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) (string, error) {
 	var i, value int
-	contextDictionary := make(map[rune]int)
-	contextDictionaryToCreate := make(map[rune]bool)
-	var contextC, contextWC, contextW rune
+	contextDictionary := make(map[string]int)
+	contextDictionaryToCreate := make(map[string]bool)
+	var contextC rune
+	var contextWC, contextW []rune
 	contextEnLargeIn := 2
 	contextDictSize := 3
 	contextNumBits := 2
@@ -36,23 +38,21 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 	uncompressedRune := utf16.Encode([]rune(uncompressed))
 	for ii = 0; ii < len(uncompressedRune); ii++ {
 		contextC = rune(uncompressedRune[ii])
-		if _, ok := contextDictionary[contextC]; !ok {
-			contextDictionary[contextC] = contextDictSize
+		// contextW, contextWC are slice of runes, keys should be enclosed in brackets
+		contextCKey := fmt.Sprintf("[%d]", contextC)
+		if _, ok := contextDictionary[contextCKey]; !ok {
+			contextDictionary[contextCKey] = contextDictSize
 			contextDictSize++
-			contextDictionaryToCreate[contextC] = true
+			contextDictionaryToCreate[contextCKey] = true
 		}
-		tmp := utf16.DecodeRune(contextW, contextC)
-		if tmp == '\uFFFD' {
-			contextWC = contextW + contextC
-		} else {
-			contextWC = tmp
-		}
-		// contextWC = contextW + contextC
-		if _, ok := contextDictionary[contextWC]; ok {
+		contextWC = append(contextW, contextC)
+		contextWCKey := fmt.Sprint(contextWC)
+		contextWKey := fmt.Sprint(contextW)
+		if _, ok := contextDictionary[contextWCKey]; ok {
 			contextW = contextWC
 		} else {
-			if _, ok := contextDictionaryToCreate[contextW]; ok {
-				if contextW < 256 {
+			if _, ok := contextDictionaryToCreate[contextWKey]; ok {
+				if len(contextW) > 0 && contextW[0] < 256 {
 					for i = 0; i < contextNumBits; i++ {
 						contextDataVal = contextDataVal << 1
 						if contextDataPosition == bitsPerChar-1 {
@@ -63,7 +63,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 							contextDataPosition++
 						}
 					}
-					value = int(contextW)
+					value = int(contextW[0])
 					for i = 0; i < 8; i++ {
 						contextDataVal = (contextDataVal << 1) | (value & 1)
 						if contextDataPosition == bitsPerChar-1 {
@@ -88,7 +88,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 						}
 						value = 0
 					}
-					value = int(contextW)
+					value = int(contextW[0])
 					for i = 0; i < 16; i++ {
 						contextDataVal = (contextDataVal << 1) | (value & 1)
 						if contextDataPosition == bitsPerChar-1 {
@@ -106,9 +106,9 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 					contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
 					contextNumBits++
 				}
-				delete(contextDictionaryToCreate, contextW)
+				delete(contextDictionaryToCreate, contextWKey)
 			} else {
-				value = contextDictionary[contextW]
+				value = contextDictionary[contextWKey]
 				for i = 0; i < contextNumBits; i++ {
 					contextDataVal = (contextDataVal << 1) | (value & 1)
 					if contextDataPosition == bitsPerChar-1 {
@@ -126,15 +126,16 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 				contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
 				contextNumBits++
 			}
-			contextDictionary[contextWC] = contextDictSize
+			contextDictionary[fmt.Sprint(contextWC)] = contextDictSize
 			contextDictSize++
-			contextW = contextC
+			contextW = []rune{contextC}
 		}
 	}
 
-	if len(uncompressed) != 0 {
-		if _, ok := contextDictionaryToCreate[contextW]; ok {
-			if contextW < 256 {
+	if len(contextW) != 0 {
+		contextWKey := fmt.Sprint(contextW)
+		if _, ok := contextDictionaryToCreate[contextWKey]; ok {
+			if contextW[0] < 256 {
 				for i = 0; i < contextNumBits; i++ {
 					contextDataVal = contextDataVal << 1
 					if contextDataPosition == bitsPerChar-1 {
@@ -145,7 +146,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 						contextDataPosition++
 					}
 				}
-				value = int(contextW)
+				value = int(contextW[0])
 				for i = 0; i < 8; i++ {
 					contextDataVal = (contextDataVal << 1) | (value & 1)
 					if contextDataPosition == bitsPerChar-1 {
@@ -170,7 +171,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 					}
 					value = 0
 				}
-				value = int(contextW)
+				value = int(contextW[0])
 				for i = 0; i < 16; i++ {
 					contextDataVal = (contextDataVal << 1) | (value & 1)
 					if contextDataPosition == bitsPerChar-1 {
@@ -188,9 +189,9 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 				contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
 				contextNumBits++
 			}
-			delete(contextDictionaryToCreate, contextW)
+			delete(contextDictionaryToCreate, contextWKey)
 		} else {
-			value = contextDictionary[contextW]
+			value = contextDictionary[contextWKey]
 			for i = 0; i < contextNumBits; i++ {
 				contextDataVal = (contextDataVal << 1) | (value & 1)
 				if contextDataPosition == bitsPerChar-1 {
