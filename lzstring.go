@@ -235,12 +235,3 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 	}
 	return strings.Join(contextData, ""), nil
 }
-
-func charCodeAtZero(s string) rune {
-	r := ([]rune(s))[0]
-	r1, _ := utf16.EncodeRune(r)
-	if r1 == '\uFFFD' {
-		return r
-	}
-	return r1
-}
