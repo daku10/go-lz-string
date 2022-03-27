@@ -3,12 +3,11 @@ package lzstring
 import (
 	"fmt"
 	"math"
-	"strings"
 	"unicode/utf16"
 )
 
-func f(i int) string {
-	return string([]rune{rune(i)})
+func f(i int) rune {
+	return rune(i)
 }
 
 func Compress(uncompressed string) ([]rune, error) {
@@ -238,14 +237,19 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 	return result, nil
 }
 
-func Decompress(compressed string) string {
-	if compressed == "" {
+func Decompress(compressed []rune) string {
+	if len(compressed) == 0 {
 		return ""
 	}
-	compressedRune := utf16.Encode([]rune(compressed))
-	return _decompress(len(compressedRune), 32768, func(index int) int {
+	compressedRune := compressed
+	res := _decompress(len(compressedRune), 32768, func(index int) int {
 		return int(compressedRune[index])
 	})
+	result := make([]uint16, 0)
+	for _, r := range res {
+		result = append(result, uint16(r))
+	}
+	return string(utf16.Decode(result))
 }
 
 type GetNextValFunc = func(index int) int
@@ -256,21 +260,22 @@ type Data struct {
 	index    int
 }
 
-func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
+func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 	// for init
-	dictionary := make(map[any]any)
+	dictionary := make(map[rune][]rune)
 	var next int
 	enlargeIn := 4
 	dictSize := 4
 	numBits := 3
-	entry := ""
-	result := make([]string, 0)
+	var entry []rune
+	result := make([][]rune, 0)
 	var i, bits, resb, maxpower, power int
-	var w, c interface{}
+	var c rune
+	var w []rune
 	data := Data{val: getNextVal(0), position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
-		dictionary[i] = i
+		dictionary[rune(i)] = []rune{rune(i)}
 	}
 	bits = 0
 	maxpower = int(math.Pow(2, 2))
@@ -334,14 +339,14 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
 		c = f(bits)
 		break
 	case 2:
-		return ""
+		return nil
 	}
-	dictionary[3] = c
-	w = c
-	result = append(result, c.(string))
+	dictionary[3] = []rune{c}
+	w = []rune{c}
+	result = append(result, []rune{c})
 	for {
 		if data.index > length {
-			return ""
+			return []rune{}
 		}
 
 		bits = 0
@@ -363,7 +368,7 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
 			power <<= 1
 		}
 
-		c = bits
+		c = rune(bits)
 		switch c {
 		case 0:
 			bits = 0
@@ -385,9 +390,9 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
 				power <<= 1
 			}
 
-			dictionary[dictSize] = f(bits)
+			dictionary[rune(dictSize)] = []rune{f(bits)}
 			dictSize++
-			c = dictSize - 1
+			c = rune(dictSize - 1)
 			enlargeIn--
 		case 1:
 			bits = 0
@@ -408,12 +413,16 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
 				bits |= tmp * power
 				power <<= 1
 			}
-			dictionary[dictSize] = f(bits)
+			dictionary[rune(dictSize)] = []rune{f(bits)}
 			dictSize++
-			c = dictSize - 1
+			c = rune(dictSize - 1)
 			enlargeIn--
 		case 2:
-			return strings.Join(result, "")
+			res := make([]rune, 0)
+			for _, r := range result {
+				res = append(res, r...)
+			}
+			return res
 		}
 
 		if enlargeIn == 0 {
@@ -422,17 +431,20 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) string {
 		}
 
 		if _, ok := dictionary[c]; ok {
-			entry = dictionary[c].(string)
+			entry = append([]rune{}, dictionary[c]...)
 		} else {
-			if c == dictSize {
-				entry = w.(string) + string([]rune(w.(string))[0])
+			if c == rune(dictSize) {
+				entry = append(w[:0:0], w...)
+				entry = append(entry, w[0])
 			} else {
-				return ""
+				return []rune{}
 			}
 		}
-		result = append(result, entry)
+		result = append(result, []rune(entry))
 
-		dictionary[dictSize] = w.(string) + string([]rune(entry)[0])
+		tmp := append(w[:0:0], w...)
+		tmp = append(tmp, entry[0])
+		dictionary[rune(dictSize)] = tmp
 		dictSize++
 		enlargeIn--
 
