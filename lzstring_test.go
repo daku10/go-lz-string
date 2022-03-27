@@ -97,8 +97,8 @@ func TestDecompress(t *testing.T) {
 			want: "aあ🍎bい🍇c",
 		},
 		{
-			arg:  []rune{0x9c},
-			want: string([]rune{0xe50}),
+			arg:  []rune{0xe50},
+			want: string([]rune{0x9c}),
 		},
 	}
 	for _, tt := range tests {
