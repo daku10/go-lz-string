@@ -2,7 +2,6 @@ package lzstring
 
 import (
 	"fmt"
-	"io"
 	"math"
 	"strings"
 	"unicode/utf16"
@@ -12,17 +11,16 @@ func f(i int) string {
 	return string([]rune{rune(i)})
 }
 
-func Compress(reader io.Reader) (string, error) {
-	s, _ := io.ReadAll(reader)
-	res, err := _compress(string(s), 16, func(i int) string {
-		return string([]rune{rune(i)})
+func Compress(uncompressed string) ([]rune, error) {
+	res, err := _compress(uncompressed, 16, func(i int) []rune {
+		return []rune{rune(i)}
 	})
 	return res, err
 }
 
-type GetCharFunc func(i int) string
+type GetCharFunc func(i int) []rune
 
-func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) (string, error) {
+func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]rune, error) {
 	var i, value int
 	contextDictionary := make(map[string]int)
 	contextDictionaryToCreate := make(map[string]bool)
@@ -31,7 +29,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 	contextEnLargeIn := 2
 	contextDictSize := 3
 	contextNumBits := 2
-	contextData := make([]string, 0)
+	contextData := make([][]rune, 0)
 	contextDataVal := 0
 	contextDataPosition := 0
 	var ii int
@@ -233,7 +231,11 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 			contextDataPosition++
 		}
 	}
-	return strings.Join(contextData, ""), nil
+	result := make([]rune, 0)
+	for _, cd := range contextData {
+		result = append(result, cd...)
+	}
+	return result, nil
 }
 
 func Decompress(compressed string) string {

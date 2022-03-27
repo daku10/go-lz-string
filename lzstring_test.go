@@ -1,7 +1,6 @@
 package lzstring
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -51,7 +50,7 @@ func TestCompress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := Compress(strings.NewReader(tt.arg))
+			reader, err := Compress(tt.arg)
 			assert.Nil(t, err)
 			b, err := reader, err
 			assert.Equal(t, tt.want, []rune(b))
@@ -112,9 +111,9 @@ func TestDecompress(t *testing.T) {
 func FuzzIntegrity(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		t.Log("aaa", []byte(s))
-		compressed, err := Compress(strings.NewReader(s))
+		compressed, err := Compress(s)
 		assert.Nil(t, err)
-		repair := Decompress(compressed)
+		repair := Decompress(string(compressed))
 		assert.Equal(t, s, repair)
 	})
 }
