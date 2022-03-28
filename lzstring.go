@@ -333,6 +333,22 @@ func getBaseValue(alphabet string, character byte) int {
 
 type GetNextValFunc = func(index int) int
 
+func DecompressFromUTF16(compressed []uint16) (string, error) {
+	if compressed == nil {
+		return "", ErrInputNil
+	}
+	if len(compressed) == 0 {
+		return "", ErrInputBlank
+	}
+	res, err := _decompress(len(compressed), 16384, func(index int) int {
+		return int(compressed[index] - 32)
+	})
+	if err != nil {
+		return "", err
+	}
+	return string(utf16.Decode(res)), nil
+}
+
 type Data struct {
 	val      int
 	position int

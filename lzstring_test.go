@@ -287,6 +287,61 @@ func TestDecompressFromBase64(t *testing.T) {
 	}
 }
 
+func TestDecompressFromUTF16(t *testing.T) {
+	tests := []struct {
+		arg  []uint16
+		want string
+	}{
+		{
+			arg:  []uint16{0x2020, 0x20},
+			want: "",
+		},
+		{
+			arg:  []uint16{0x268, 0x20},
+			want: "H",
+		},
+		{
+			arg:  []uint16{0x262, 0x4c2d, 0x4c3e, 0x6a39, 0x2020, 0x20},
+			want: "HelloHello",
+		},
+		{
+			arg:  []uint16{0x10e1, 0xd66, 0x1860, 0x4dc1, 0x2660, 0x20},
+			want: "ababcabcdabcde",
+		},
+		{
+			arg:  []uint16{0x262, 0x4c2d, 0x4c3e, 0x6054, 0x40, 0x3bc4, 0x293, 0x46, 0x2020, 0x20},
+			want: "Hello, world",
+		},
+		{
+			arg:  []uint16{0x4861, 0x4864, 0xcac, 0x20e8, 0x926, 0x2168, 0x18a0, 0x20},
+			want: "あいうえお",
+		},
+		{
+			arg:  []uint16{0x47a3, 0x3905, 0x7b60, 0x20},
+			want: "🍎",
+		},
+		{
+			arg:  []uint16{0x47a3, 0x3905, 0x7bf3, 0x4616, 0x4020, 0x20},
+			want: "🍎🍇",
+		},
+		{
+			arg:  []uint16{0x10f1, 0x439, 0x7a3, 0x3892, 0x7da2, 0x1a28, 0x41ad, 0xe4f, 0x5851, 0x4820, 0x20},
+			want: "aあ🍎bい🍇c",
+		},
+		{
+			arg:  []uint16{0x748, 0x20},
+			want: string([]rune{0x9c}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
+			res, err := DecompressFromUTF16(tt.arg)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.want, res)
+		})
+	}
+}
+
 func FuzzIntegrity(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		compressed, err := Compress(s)
