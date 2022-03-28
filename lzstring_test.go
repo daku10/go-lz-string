@@ -175,6 +175,14 @@ func TestCompressToUTF16(t *testing.T) {
 			arg:  string([]rune{0x9c}),
 			want: []uint16{0x748, 0x20},
 		},
+		{
+			arg:  "邊󠄆",
+			want: []uint16{0x4a41, 0x1825, 0x5bac, 0xbd4, 0x20, 0x20},
+		},
+		{
+			arg:  "👨‍👨‍👦",
+			want: []uint16{0x57a3, 0x384c, 0x3bb6, 0x6a, 0xc53, 0xef0, 0x20},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
@@ -231,6 +239,14 @@ func TestCompressToUint8Array(t *testing.T) {
 			arg:  string([]rune{0x9c}),
 			want: []byte{0xe, 0x50},
 		},
+		{
+			arg:  "邊󠄆",
+			want: []byte{0x94, 0x42, 0x60, 0x16, 0xdc, 0x60, 0xbb, 0x40},
+		},
+		{
+			arg:  "👨‍👨‍👦",
+			want: []byte{0xaf, 0x6, 0xe0, 0xb1, 0xdc, 0xb0, 0x4, 0xa1, 0x86, 0x63, 0xb4, 0x0},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
@@ -286,6 +302,14 @@ func TestCompressToEncodedURIComponent(t *testing.T) {
 		{
 			arg:  string([]rune{0x9c}),
 			want: "DlA",
+		},
+		{
+			arg:  "邊󠄆",
+			want: "lEJgFtxgu0A",
+		},
+		{
+			arg:  "👨‍👨‍👦",
+			want: "rwbgsdywBKGGY7Q",
 		},
 	}
 	for _, tt := range tests {
