@@ -14,6 +14,10 @@ func TestCompress(t *testing.T) {
 		want []rune
 	}{
 		{
+			arg:  "",
+			want: []rune{},
+		},
+		{
 			arg:  "H",
 			want: []rune("Ґ"),
 		},
@@ -65,6 +69,10 @@ func TestDecompress(t *testing.T) {
 		arg  []rune
 		want string
 	}{
+		{
+			arg:  []rune{},
+			want: "",
+		},
 		{
 			arg:  []rune("Ґ"),
 			want: "H",
