@@ -35,6 +35,9 @@ func Compress(uncompressed string) ([]uint16, error) {
 const keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
 
 func CompressToBase64(uncompressed string) (string, error) {
+	if !utf8.ValidString(uncompressed) {
+		return "", ErrInputInvalidString
+	}
 	res, err := _compress(uncompressed, 6, func(i int) []uint16 {
 		return []uint16{uint16(keyStrBase64[i])}
 	})
@@ -57,6 +60,9 @@ func CompressToBase64(uncompressed string) (string, error) {
 }
 
 func CompressToUTF16(uncompressed string) ([]uint16, error) {
+	if !utf8.ValidString(uncompressed) {
+		return nil, ErrInputInvalidString
+	}
 	res, err := _compress(uncompressed, 15, func(i int) []uint16 {
 		return []uint16{f(i + 32)}
 	})
