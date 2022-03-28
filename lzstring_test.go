@@ -55,6 +55,14 @@ func TestCompress(t *testing.T) {
 			arg:  string([]rune{0x9c}),
 			want: []uint16{0xe50},
 		},
+		{
+			arg:  "邊󠄆",
+			want: []uint16{0x9442, 0x6016, 0xdc60, 0xbb40},
+		},
+		{
+			arg:  "👨‍👨‍👦",
+			want: []uint16{0xaf06, 0xe0b1, 0xdcb0, 0x4a1, 0x8663, 0xb400},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
@@ -222,6 +230,14 @@ func TestDecompress(t *testing.T) {
 		{
 			arg:  []uint16{0xe50},
 			want: string([]rune{0x9c}),
+		},
+		{
+			arg:  []uint16{0x9442, 0x6016, 0xdc60, 0xbb40},
+			want: "邊󠄆",
+		},
+		{
+			arg:  []uint16{0xaf06, 0xe0b1, 0xdcb0, 0x4a1, 0x8663, 0xb400},
+			want: "👨‍👨‍👦",
 		},
 	}
 	for _, tt := range tests {
