@@ -56,7 +56,9 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 			contextDictSize++
 			contextDictionaryToCreate[contextCKey] = true
 		}
-		contextWC = append(contextW, contextC)
+		contextWC = make([]uint16, len(contextW))
+		copy(contextWC, contextW)
+		contextWC = append(contextWC, contextC)
 		contextWCKey := fmt.Sprint(contextWC)
 		contextWKey := fmt.Sprint(contextW)
 		if _, ok := contextDictionary[contextWCKey]; ok {
@@ -447,10 +449,12 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) ([]uint1
 		}
 
 		if _, ok := dictionary[c]; ok {
-			entry = append([]uint16{}, dictionary[c]...)
+			entry = make([]uint16, len(dictionary[c]))
+			copy(entry, dictionary[c])
 		} else {
 			if c == uint16(dictSize) {
-				entry = append(w[:0:0], w...)
+				entry = make([]uint16, len(w))
+				copy(entry, w)
 				entry = append(entry, w[0])
 			} else {
 				return nil, ErrInputNotDecodable
@@ -458,7 +462,8 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) ([]uint1
 		}
 		result = append(result, entry)
 
-		tmp := append(w[:0:0], w...)
+		tmp := make([]uint16, len(w))
+		copy(tmp, w)
 		tmp = append(tmp, entry[0])
 		dictionary[uint16(dictSize)] = tmp
 		dictSize++
