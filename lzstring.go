@@ -8,45 +8,45 @@ import (
 	"unicode/utf8"
 )
 
-func f(i int) rune {
-	return rune(i)
+func f(i int) uint16 {
+	return uint16(i)
 }
 
 var (
 	ErrInvalidString = errors.New("Invalid string")
 )
 
-func Compress(uncompressed string) ([]rune, error) {
+func Compress(uncompressed string) ([]uint16, error) {
 	if !utf8.ValidString(uncompressed) {
 		return nil, ErrInvalidString
 	}
 	if len(uncompressed) == 0 {
-		return []rune{}, nil
+		return []uint16{}, nil
 	}
-	res, err := _compress(uncompressed, 16, func(i int) []rune {
-		return []rune{rune(i)}
+	res, err := _compress(uncompressed, 16, func(i int) []uint16 {
+		return []uint16{uint16(i)}
 	})
 	return res, err
 }
 
-type GetCharFunc func(i int) []rune
+type GetCharFunc func(i int) []uint16
 
-func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]rune, error) {
+func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]uint16, error) {
 	var i, value int
 	contextDictionary := make(map[string]int)
 	contextDictionaryToCreate := make(map[string]bool)
-	var contextC rune
-	var contextWC, contextW []rune
+	var contextC uint16
+	var contextWC, contextW []uint16
 	contextEnLargeIn := 2
 	contextDictSize := 3
 	contextNumBits := 2
-	contextData := make([][]rune, 0)
+	contextData := make([][]uint16, 0)
 	contextDataVal := 0
 	contextDataPosition := 0
 	var ii int
 	uncompressedRune := utf16.Encode([]rune(uncompressed))
 	for ii = 0; ii < len(uncompressedRune); ii++ {
-		contextC = rune(uncompressedRune[ii])
+		contextC = uncompressedRune[ii]
 		// contextW, contextWC are slice of runes, keys should be enclosed in brackets
 		contextCKey := fmt.Sprintf("[%d]", contextC)
 		if _, ok := contextDictionary[contextCKey]; !ok {
@@ -137,7 +137,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 			}
 			contextDictionary[fmt.Sprint(contextWC)] = contextDictSize
 			contextDictSize++
-			contextW = []rune{contextC}
+			contextW = []uint16{contextC}
 		}
 	}
 
@@ -242,26 +242,21 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 			contextDataPosition++
 		}
 	}
-	result := make([]rune, 0)
+	result := make([]uint16, 0)
 	for _, cd := range contextData {
 		result = append(result, cd...)
 	}
 	return result, nil
 }
 
-func Decompress(compressed []rune) string {
+func Decompress(compressed []uint16) string {
 	if len(compressed) == 0 {
 		return ""
 	}
-	compressedRune := compressed
-	res := _decompress(len(compressedRune), 32768, func(index int) int {
-		return int(compressedRune[index])
+	res := _decompress(len(compressed), 32768, func(index int) int {
+		return int(compressed[index])
 	})
-	result := make([]uint16, 0)
-	for _, r := range res {
-		result = append(result, uint16(r))
-	}
-	return string(utf16.Decode(result))
+	return string(utf16.Decode(res))
 }
 
 type GetNextValFunc = func(index int) int
@@ -272,22 +267,22 @@ type Data struct {
 	index    int
 }
 
-func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
+func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16 {
 	// for init
-	dictionary := make(map[rune][]rune)
+	dictionary := make(map[uint16][]uint16)
 	var next int
 	enlargeIn := 4
 	dictSize := 4
 	numBits := 3
-	var entry []rune
-	result := make([][]rune, 0)
+	var entry []uint16
+	result := make([][]uint16, 0)
 	var i, bits, resb, maxpower, power int
-	var c rune
-	var w []rune
+	var c uint16
+	var w []uint16
 	data := Data{val: getNextVal(0), position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
-		dictionary[rune(i)] = []rune{rune(i)}
+		dictionary[uint16(i)] = []uint16{uint16(i)}
 	}
 	bits = 0
 	maxpower = int(math.Pow(2, 2))
@@ -353,12 +348,12 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 	case 2:
 		return nil
 	}
-	dictionary[3] = []rune{c}
-	w = []rune{c}
-	result = append(result, []rune{c})
+	dictionary[3] = []uint16{c}
+	w = []uint16{c}
+	result = append(result, []uint16{c})
 	for {
 		if data.index > length {
-			return []rune{}
+			return []uint16{}
 		}
 
 		bits = 0
@@ -380,7 +375,7 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 			power <<= 1
 		}
 
-		c = rune(bits)
+		c = f(bits)
 		switch c {
 		case 0:
 			bits = 0
@@ -402,9 +397,9 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 				power <<= 1
 			}
 
-			dictionary[rune(dictSize)] = []rune{f(bits)}
+			dictionary[uint16(dictSize)] = []uint16{f(bits)}
 			dictSize++
-			c = rune(dictSize - 1)
+			c = uint16(dictSize - 1)
 			enlargeIn--
 		case 1:
 			bits = 0
@@ -425,12 +420,12 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 				bits |= tmp * power
 				power <<= 1
 			}
-			dictionary[rune(dictSize)] = []rune{f(bits)}
+			dictionary[uint16(dictSize)] = []uint16{f(bits)}
 			dictSize++
-			c = rune(dictSize - 1)
+			c = uint16(dictSize - 1)
 			enlargeIn--
 		case 2:
-			res := make([]rune, 0)
+			res := make([]uint16, 0)
 			for _, r := range result {
 				res = append(res, r...)
 			}
@@ -443,20 +438,20 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []rune {
 		}
 
 		if _, ok := dictionary[c]; ok {
-			entry = append([]rune{}, dictionary[c]...)
+			entry = append([]uint16{}, dictionary[c]...)
 		} else {
-			if c == rune(dictSize) {
+			if c == uint16(dictSize) {
 				entry = append(w[:0:0], w...)
 				entry = append(entry, w[0])
 			} else {
-				return []rune{}
+				return []uint16{}
 			}
 		}
-		result = append(result, []rune(entry))
+		result = append(result, entry)
 
 		tmp := append(w[:0:0], w...)
 		tmp = append(tmp, entry[0])
-		dictionary[rune(dictSize)] = tmp
+		dictionary[uint16(dictSize)] = tmp
 		dictSize++
 		enlargeIn--
 
