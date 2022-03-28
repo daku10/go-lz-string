@@ -23,9 +23,6 @@ func Compress(uncompressed string) ([]uint16, error) {
 	if !utf8.ValidString(uncompressed) {
 		return nil, ErrInputInvalidString
 	}
-	if len(uncompressed) == 0 {
-		return []uint16{}, nil
-	}
 	res, err := _compress(uncompressed, 16, func(i int) []uint16 {
 		return []uint16{uint16(i)}
 	})
