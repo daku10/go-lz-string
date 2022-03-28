@@ -120,6 +120,62 @@ func TestCompressToBase64(t *testing.T) {
 	}
 }
 
+func TestCompressToUTF16(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want []uint16
+	}{
+		{
+			arg:  "",
+			want: []uint16{0x2020, 0x20},
+		},
+		{
+			arg:  "H",
+			want: []uint16{0x268, 0x20},
+		},
+		{
+			arg:  "HelloHello",
+			want: []uint16{0x262, 0x4c2d, 0x4c3e, 0x6a39, 0x2020, 0x20},
+		},
+		{
+			arg:  "ababcabcdabcde",
+			want: []uint16{0x10e1, 0xd66, 0x1860, 0x4dc1, 0x2660, 0x20},
+		},
+		{
+			arg:  "Hello, world",
+			want: []uint16{0x262, 0x4c2d, 0x4c3e, 0x6054, 0x40, 0x3bc4, 0x293, 0x46, 0x2020, 0x20},
+		},
+		{
+			arg:  "あいうえお",
+			want: []uint16{0x4861, 0x4864, 0xcac, 0x20e8, 0x926, 0x2168, 0x18a0, 0x20},
+		},
+		{
+			arg:  "🍎",
+			want: []uint16{0x47a3, 0x3905, 0x7b60, 0x20},
+		},
+		{
+			arg:  "🍎🍇",
+			want: []uint16{0x47a3, 0x3905, 0x7bf3, 0x4616, 0x4020, 0x20},
+		},
+		{
+			arg:  "aあ🍎bい🍇c",
+			want: []uint16{0x10f1, 0x439, 0x7a3, 0x3892, 0x7da2, 0x1a28, 0x41ad, 0xe4f, 0x5851, 0x4820, 0x20},
+		},
+		{
+			arg:  string([]rune{0x9c}),
+			want: []uint16{0x748, 0x20},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.arg, func(t *testing.T) {
+			reader, err := CompressToUTF16(tt.arg)
+			assert.Nil(t, err)
+			b, err := reader, err
+			assert.Equal(t, tt.want, b)
+		})
+	}
+}
+
 func TestDecompress(t *testing.T) {
 	tests := []struct {
 		arg  []uint16

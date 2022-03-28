@@ -56,6 +56,18 @@ func CompressToBase64(uncompressed string) (string, error) {
 	}
 }
 
+func CompressToUTF16(uncompressed string) ([]uint16, error) {
+	res, err := _compress(uncompressed, 15, func(i int) []uint16 {
+		return []uint16{f(i + 32)}
+	})
+	if err != nil {
+		return nil, err
+	}
+	// 32 means " "(space) character
+	res = append(res, 32)
+	return res, nil
+}
+
 type GetCharFunc func(i int) []uint16
 
 func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]uint16, error) {
