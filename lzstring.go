@@ -74,6 +74,39 @@ func CompressToUTF16(uncompressed string) ([]uint16, error) {
 	return res, nil
 }
 
+func CompressToUint8Array(uncompressed string) ([]byte, error) {
+	if !utf8.ValidString(uncompressed) {
+		return nil, ErrInputInvalidString
+	}
+	res, err := Compress(uncompressed)
+	if err != nil {
+		return nil, err
+	}
+	length := len(res)
+	buf := make([]byte, length*2)
+	for i := 0; i < length; i++ {
+		currentValue := res[i]
+		buf[i*2] = byte(currentValue >> 8)
+		buf[i*2+1] = byte(currentValue % 256)
+	}
+	return buf, nil
+}
+
+const keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$"
+
+func CompressToEncodedURIComponent(uncompressed string) (string, error) {
+	if !utf8.ValidString(uncompressed) {
+		return "", ErrInputInvalidString
+	}
+	res, err := _compress(uncompressed, 6, func(i int) []uint16 {
+		return []uint16{uint16(keyStrUriSafe[i])}
+	})
+	if err != nil {
+		return "", err
+	}
+	return string(utf16.Decode(res)), nil
+}
+
 type GetCharFunc func(i int) []uint16
 
 func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]uint16, error) {

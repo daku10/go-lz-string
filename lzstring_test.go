@@ -17,7 +17,7 @@ func TestCompress(t *testing.T) {
 	}{
 		{
 			arg:  "",
-			want: []uint16{},
+			want: []uint16{0x4000},
 		},
 		{
 			arg:  "H",
@@ -179,6 +179,118 @@ func TestCompressToUTF16(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
 			reader, err := CompressToUTF16(tt.arg)
+			assert.Nil(t, err)
+			b, err := reader, err
+			assert.Equal(t, tt.want, b)
+		})
+	}
+}
+
+func TestCompressToUint8Array(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want []byte
+	}{
+		{
+			arg:  "",
+			want: []byte{0x40, 0x0},
+		},
+		{
+			arg:  "H",
+			want: []byte{0x4, 0x90},
+		},
+		{
+			arg:  "HelloHello",
+			want: []byte{0x4, 0x85, 0x30, 0x36, 0x60, 0xf6, 0xa1, 0x94, 0x0, 0x0},
+		},
+		{
+			arg:  "ababcabcdabcde",
+			want: []byte{0x21, 0x82, 0x35, 0x18, 0xc2, 0x4, 0xda, 0x14, 0xc8, 0x0},
+		},
+		{
+			arg:  "Hello, world",
+			want: []byte{0x4, 0x85, 0x30, 0x36, 0x60, 0xf6, 0x3, 0x40, 0x4, 0xe, 0xe9, 0x1, 0x39, 0x80, 0x26, 0x40},
+		},
+		{
+			arg:  "あいうえお",
+			want: []byte{0x90, 0x83, 0x21, 0x10, 0x64, 0x62, 0xc, 0x81, 0x20, 0xc8, 0x52, 0xc, 0x40, 0x0},
+		},
+		{
+			arg:  "🍎",
+			want: []byte{0x8f, 0x6, 0xe3, 0x97, 0xda, 0x0},
+		},
+		{
+			arg:  "🍎🍇",
+			want: []byte{0x8f, 0x6, 0xe3, 0x97, 0xde, 0x9c, 0x5f, 0x68},
+		},
+		{
+			arg:  "aあ🍎bい🍇c",
+			want: []byte{0x21, 0xa2, 0x10, 0x64, 0x3c, 0x1b, 0x87, 0x2f, 0xb0, 0x46, 0x82, 0x20, 0xc6, 0x8e, 0x2f, 0xb0, 0x63, 0x20},
+		},
+		{
+			arg:  string([]rune{0x9c}),
+			want: []byte{0xe, 0x50},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.arg, func(t *testing.T) {
+			reader, err := CompressToUint8Array(tt.arg)
+			assert.Nil(t, err)
+			b, err := reader, err
+			assert.Equal(t, tt.want, b)
+		})
+	}
+}
+
+func TestCompressToEncodedURIComponent(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want string
+	}{
+		{
+			arg:  "",
+			want: "Q",
+		},
+		{
+			arg:  "H",
+			want: "BJA",
+		},
+		{
+			arg:  "HelloHello",
+			want: "BIUwNmD2oZQ",
+		},
+		{
+			arg:  "ababcabcdabcde",
+			want: "IYI1GMIE2hTI",
+		},
+		{
+			arg:  "Hello, world",
+			want: "BIUwNmD2A0AEDukBOYAmQ",
+		},
+		{
+			arg:  "あいうえお",
+			want: "kIMhEGRiDIEgyFIMQ",
+		},
+		{
+			arg:  "🍎",
+			want: "jwbjl9o",
+		},
+		{
+			arg:  "🍎🍇",
+			want: "jwbjl96cX2g",
+		},
+		{
+			arg:  "aあ🍎bい🍇c",
+			want: "IaIQZDwbhy+wRoIgxo4vsGMg",
+		},
+		{
+			arg:  string([]rune{0x9c}),
+			want: "DlA",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.arg, func(t *testing.T) {
+			reader, err := CompressToEncodedURIComponent(tt.arg)
 			assert.Nil(t, err)
 			b, err := reader, err
 			assert.Equal(t, tt.want, b)
