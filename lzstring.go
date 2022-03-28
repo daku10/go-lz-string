@@ -31,6 +31,30 @@ func Compress(uncompressed string) ([]uint16, error) {
 	return res, err
 }
 
+const keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+
+func CompressToBase64(uncompressed string) (string, error) {
+	res, err := _compress(uncompressed, 6, func(i int) []uint16 {
+		return []uint16{uint16(keyStrBase64[i])}
+	})
+	if err != nil {
+		return "", err
+	}
+	resStr := string(utf16.Decode(res))
+	switch len(resStr) % 4 {
+	case 0:
+		return resStr, nil
+	case 1:
+		return resStr + "===", nil
+	case 2:
+		return resStr + "==", nil
+	case 3:
+		return resStr + "=", nil
+	default:
+		return resStr, nil
+	}
+}
+
 type GetCharFunc func(i int) []uint16
 
 func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]uint16, error) {

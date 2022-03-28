@@ -64,6 +64,62 @@ func TestCompress(t *testing.T) {
 	}
 }
 
+func TestCompressToBase64(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want string
+	}{
+		{
+			arg:  "",
+			want: "Q===",
+		},
+		{
+			arg:  "H",
+			want: "BJA=",
+		},
+		{
+			arg:  "HelloHello",
+			want: "BIUwNmD2oZQ=",
+		},
+		{
+			arg:  "ababcabcdabcde",
+			want: "IYI1GMIE2hTI",
+		},
+		{
+			arg:  "Hello, world",
+			want: "BIUwNmD2A0AEDukBOYAmQ===",
+		},
+		{
+			arg:  "あいうえお",
+			want: "kIMhEGRiDIEgyFIMQ===",
+		},
+		{
+			arg:  "🍎",
+			want: "jwbjl9o=",
+		},
+		{
+			arg:  "🍎🍇",
+			want: "jwbjl96cX2g=",
+		},
+		{
+			arg:  "aあ🍎bい🍇c",
+			want: "IaIQZDwbhy+wRoIgxo4vsGMg",
+		},
+		{
+			arg:  string([]rune{0x9c}),
+			want: "DlA=",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.arg, func(t *testing.T) {
+			reader, err := CompressToBase64(tt.arg)
+			assert.Nil(t, err)
+			b, err := reader, err
+			assert.Equal(t, tt.want, b)
+		})
+	}
+}
+
 func TestDecompress(t *testing.T) {
 	tests := []struct {
 		arg  []uint16
