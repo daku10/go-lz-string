@@ -175,6 +175,62 @@ func TestDecompress(t *testing.T) {
 	}
 }
 
+func TestDecompressFromBase64(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want string
+	}{
+		{
+			arg:  "Q===",
+			want: "",
+		},
+		{
+			arg:  "BJA=",
+			want: "H",
+		},
+		{
+			arg:  "BIUwNmD2oZQ=",
+			want: "HelloHello",
+		},
+		{
+			arg:  "IYI1GMIE2hTI",
+			want: "ababcabcdabcde",
+		},
+		{
+			arg:  "BIUwNmD2A0AEDukBOYAmQ===",
+			want: "Hello, world",
+		},
+		{
+			arg:  "kIMhEGRiDIEgyFIMQ===",
+			want: "あいうえお",
+		},
+		{
+			arg:  "jwbjl9o=",
+			want: "🍎",
+		},
+		{
+			arg:  "jwbjl96cX2g=",
+			want: "🍎🍇",
+		},
+		{
+			arg:  "IaIQZDwbhy+wRoIgxo4vsGMg",
+			want: "aあ🍎bい🍇c",
+		},
+		{
+			arg:  "DlA=",
+			want: string([]rune{0x9c}),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.arg, func(t *testing.T) {
+			reader, err := DecompressFromBase64(tt.arg)
+			assert.Nil(t, err)
+			b, err := reader, err
+			assert.Equal(t, tt.want, b)
+		})
+	}
+}
+
 func FuzzIntegrity(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		compressed, err := Compress(s)

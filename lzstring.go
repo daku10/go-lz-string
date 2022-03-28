@@ -16,6 +16,7 @@ var (
 	ErrInputInvalidString = errors.New("Input is invalid string")
 	ErrInputNotDecodable  = errors.New("Input is not decodable")
 	ErrInputNil           = errors.New("Input should not be nil")
+	ErrInputBlank         = errors.New("Input should not be blank")
 )
 
 func Compress(uncompressed string) ([]uint16, error) {
@@ -291,6 +292,31 @@ func Decompress(compressed []uint16) (string, error) {
 		return "", err
 	}
 	return string(utf16.Decode(res)), nil
+}
+
+func DecompressFromBase64(compressed string) (string, error) {
+	if compressed == "" {
+		return "", ErrInputBlank
+	}
+	res, err := _decompress(len(compressed), 32, func(index int) int {
+		return getBaseValue(keyStrBase64, compressed[index])
+	})
+	if err != nil {
+		return "", err
+	}
+	return string(utf16.Decode(res)), nil
+}
+
+var baseReverseDic map[string]map[byte]int = make(map[string]map[byte]int)
+
+func getBaseValue(alphabet string, character byte) int {
+	if _, ok := baseReverseDic[alphabet]; !ok {
+		baseReverseDic[alphabet] = make(map[byte]int)
+		for i := 0; i < len(alphabet); i++ {
+			baseReverseDic[alphabet][alphabet[i]] = i
+		}
+	}
+	return baseReverseDic[alphabet][character]
 }
 
 type GetNextValFunc = func(index int) int
