@@ -3,6 +3,7 @@ package lzstring
 import (
 	"fmt"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -111,8 +112,11 @@ func TestDecompress(t *testing.T) {
 
 func FuzzIntegrity(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
-		t.Log("aaa", []byte(s))
 		compressed, err := Compress(s)
+		if !utf8.ValidString(s) {
+			assert.NotNil(t, err)
+			return
+		}
 		assert.Nil(t, err)
 		repair := Decompress(compressed)
 		assert.Equal(t, s, repair)

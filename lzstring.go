@@ -1,16 +1,28 @@
 package lzstring
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"unicode/utf16"
+	"unicode/utf8"
 )
 
 func f(i int) rune {
 	return rune(i)
 }
 
+var (
+	ErrInvalidString = errors.New("Invalid string")
+)
+
 func Compress(uncompressed string) ([]rune, error) {
+	if !utf8.ValidString(uncompressed) {
+		return nil, ErrInvalidString
+	}
+	if len(uncompressed) == 0 {
+		return []rune{}, nil
+	}
 	res, err := _compress(uncompressed, 16, func(i int) []rune {
 		return []rune{rune(i)}
 	})
