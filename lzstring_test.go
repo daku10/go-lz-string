@@ -2,7 +2,9 @@ package lzstring
 
 import (
 	"fmt"
+	"strings"
 	"testing"
+	"unicode/utf16"
 	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
@@ -351,6 +353,42 @@ func FuzzIntegrity(f *testing.F) {
 		}
 		assert.Nil(t, err)
 		repair, err := Decompress(compressed)
+		assert.Nil(t, err)
+		assert.Equal(t, s, repair)
+	})
+}
+
+func FuzzIntegrityBase64(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s string) {
+		compressed, err := CompressToBase64(s)
+		if !utf8.ValidString(s) {
+			assert.NotNil(t, err)
+			return
+		}
+		assert.Condition(t, func() (success bool) {
+			for _, c := range compressed {
+				if !strings.Contains(keyStrBase64, string(c)) {
+					return false
+				}
+			}
+			return true
+		})
+		repair, err := DecompressFromBase64(compressed)
+		assert.Nil(t, err)
+		assert.Equal(t, s, repair)
+	})
+}
+
+func FuzzIntegrityUTF16(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s string) {
+		compressed, err := CompressToUTF16(s)
+		if !utf8.ValidString(s) {
+			assert.NotNil(t, err)
+			return
+		}
+		isValid := utf8.ValidString(string(utf16.Decode(compressed)))
+		assert.True(t, isValid)
+		repair, err := DecompressFromUTF16(compressed)
 		assert.Nil(t, err)
 		assert.Equal(t, s, repair)
 	})
