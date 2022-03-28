@@ -496,6 +496,132 @@ func TestDecompressFromUTF16(t *testing.T) {
 	}
 }
 
+func TestDecompressFromUint8Array(t *testing.T) {
+	tests := []struct {
+		arg  []byte
+		want string
+	}{
+		{
+			arg:  []byte{0x40, 0x0},
+			want: "",
+		},
+		{
+			arg:  []byte{0x4, 0x90},
+			want: "H",
+		},
+		{
+			arg:  []byte{0x4, 0x85, 0x30, 0x36, 0x60, 0xf6, 0xa1, 0x94, 0x0, 0x0},
+			want: "HelloHello",
+		},
+		{
+			arg:  []byte{0x21, 0x82, 0x35, 0x18, 0xc2, 0x4, 0xda, 0x14, 0xc8, 0x0},
+			want: "ababcabcdabcde",
+		},
+		{
+			arg:  []byte{0x4, 0x85, 0x30, 0x36, 0x60, 0xf6, 0x3, 0x40, 0x4, 0xe, 0xe9, 0x1, 0x39, 0x80, 0x26, 0x40},
+			want: "Hello, world",
+		},
+		{
+			arg:  []byte{0x90, 0x83, 0x21, 0x10, 0x64, 0x62, 0xc, 0x81, 0x20, 0xc8, 0x52, 0xc, 0x40, 0x0},
+			want: "あいうえお",
+		},
+		{
+			arg:  []byte{0x8f, 0x6, 0xe3, 0x97, 0xda, 0x0},
+			want: "🍎",
+		},
+		{
+			arg:  []byte{0x8f, 0x6, 0xe3, 0x97, 0xde, 0x9c, 0x5f, 0x68},
+			want: "🍎🍇",
+		},
+		{
+			arg:  []byte{0x21, 0xa2, 0x10, 0x64, 0x3c, 0x1b, 0x87, 0x2f, 0xb0, 0x46, 0x82, 0x20, 0xc6, 0x8e, 0x2f, 0xb0, 0x63, 0x20},
+			want: "aあ🍎bい🍇c",
+		},
+		{
+			arg:  []byte{0xe, 0x50},
+			want: string([]rune{0x9c}),
+		},
+		{
+			arg:  []byte{0x94, 0x42, 0x60, 0x16, 0xdc, 0x60, 0xbb, 0x40},
+			want: "邊󠄆",
+		},
+		{
+			arg:  []byte{0xaf, 0x6, 0xe0, 0xb1, 0xdc, 0xb0, 0x4, 0xa1, 0x86, 0x63, 0xb4, 0x0},
+			want: "👨‍👨‍👦",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
+			res, err := DecompressFromUint8Array(tt.arg)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.want, res)
+		})
+	}
+}
+
+func TestDecompressFromEncodedURIComponent(t *testing.T) {
+	tests := []struct {
+		arg  string
+		want string
+	}{
+		{
+			arg:  "Q",
+			want: "",
+		},
+		{
+			arg:  "BJA",
+			want: "H",
+		},
+		{
+			arg:  "BIUwNmD2oZQ",
+			want: "HelloHello",
+		},
+		{
+			arg:  "IYI1GMIE2hTI",
+			want: "ababcabcdabcde",
+		},
+		{
+			arg:  "BIUwNmD2A0AEDukBOYAmQ",
+			want: "Hello, world",
+		},
+		{
+			arg:  "kIMhEGRiDIEgyFIMQ",
+			want: "あいうえお",
+		},
+		{
+			arg:  "jwbjl9o",
+			want: "🍎",
+		},
+		{
+			arg:  "jwbjl96cX2g",
+			want: "🍎🍇",
+		},
+		{
+			arg:  "IaIQZDwbhy+wRoIgxo4vsGMg",
+			want: "aあ🍎bい🍇c",
+		},
+		{
+			arg:  "DlA",
+			want: string([]rune{0x9c}),
+		},
+		{
+			arg:  "lEJgFtxgu0A",
+			want: "邊󠄆",
+		},
+		{
+			arg:  "rwbgsdywBKGGY7Q",
+			want: "👨‍👨‍👦",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
+			res, err := DecompressFromEncodedURIComponent(tt.arg)
+			assert.Nil(t, err)
+			assert.Equal(t, tt.want, res)
+		})
+	}
+}
+
 func FuzzIntegrity(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s string) {
 		compressed, err := Compress(s)

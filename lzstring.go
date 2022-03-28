@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strings"
 	"unicode/utf16"
 	"unicode/utf8"
 )
@@ -378,6 +379,30 @@ func DecompressFromUTF16(compressed []uint16) (string, error) {
 	}
 	res, err := _decompress(len(compressed), 16384, func(index int) int {
 		return int(compressed[index] - 32)
+	})
+	if err != nil {
+		return "", err
+	}
+	return string(utf16.Decode(res)), nil
+}
+
+func DecompressFromUint8Array(compressed []byte) (string, error) {
+	if compressed == nil {
+		return "", ErrInputNil
+	}
+	length := len(compressed) / 2
+	buf := make([]uint16, len(compressed)/2)
+	for i := 0; i < length; i++ {
+		buf[i] = uint16(compressed[i*2])*256 + uint16(compressed[i*2+1])
+	}
+
+	return Decompress(buf)
+}
+
+func DecompressFromEncodedURIComponent(compressed string) (string, error) {
+	replaced := strings.Replace(compressed, " ", "+", -1)
+	res, err := _decompress(len(replaced), 32, func(index int) int {
+		return getBaseValue(keyStrUriSafe, replaced[index])
 	})
 	if err != nil {
 		return "", err
