@@ -112,7 +112,8 @@ func TestDecompress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
-			res := Decompress(tt.arg)
+			res, err := Decompress(tt.arg)
+			assert.Nil(t, err)
 			assert.Equal(t, tt.want, res)
 		})
 	}
@@ -126,7 +127,8 @@ func FuzzIntegrity(f *testing.F) {
 			return
 		}
 		assert.Nil(t, err)
-		repair := Decompress(compressed)
+		repair, err := Decompress(compressed)
+		assert.Nil(t, err)
 		assert.Equal(t, s, repair)
 	})
 }

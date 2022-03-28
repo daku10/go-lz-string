@@ -13,12 +13,14 @@ func f(i int) uint16 {
 }
 
 var (
-	ErrInvalidString = errors.New("Invalid string")
+	ErrInputInvalidString = errors.New("Input is invalid string")
+	ErrInputNotDecodable  = errors.New("Input is not decodable")
+	ErrInputNil           = errors.New("Input should not be nil")
 )
 
 func Compress(uncompressed string) ([]uint16, error) {
 	if !utf8.ValidString(uncompressed) {
-		return nil, ErrInvalidString
+		return nil, ErrInputInvalidString
 	}
 	if len(uncompressed) == 0 {
 		return []uint16{}, nil
@@ -249,14 +251,20 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc)
 	return result, nil
 }
 
-func Decompress(compressed []uint16) string {
-	if len(compressed) == 0 {
-		return ""
+func Decompress(compressed []uint16) (string, error) {
+	if compressed == nil {
+		return "", ErrInputNil
 	}
-	res := _decompress(len(compressed), 32768, func(index int) int {
+	if len(compressed) == 0 {
+		return "", nil
+	}
+	res, err := _decompress(len(compressed), 32768, func(index int) int {
 		return int(compressed[index])
 	})
-	return string(utf16.Decode(res))
+	if err != nil {
+		return "", err
+	}
+	return string(utf16.Decode(res)), nil
 }
 
 type GetNextValFunc = func(index int) int
@@ -267,7 +275,7 @@ type Data struct {
 	index    int
 }
 
-func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16 {
+func _decompress(length int, resetValue int, getNextVal GetNextValFunc) ([]uint16, error) {
 	// for init
 	dictionary := make(map[uint16][]uint16)
 	var next int
@@ -276,13 +284,14 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16
 	numBits := 3
 	var entry []uint16
 	result := make([][]uint16, 0)
-	var i, bits, resb, maxpower, power int
+	var i uint16
+	var bits, resb, maxpower, power int
 	var c uint16
 	var w []uint16
 	data := Data{val: getNextVal(0), position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
-		dictionary[uint16(i)] = []uint16{uint16(i)}
+		dictionary[i] = []uint16{i}
 	}
 	bits = 0
 	maxpower = int(math.Pow(2, 2))
@@ -346,14 +355,14 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16
 		c = f(bits)
 		break
 	case 2:
-		return nil
+		return nil, nil
 	}
 	dictionary[3] = []uint16{c}
 	w = []uint16{c}
 	result = append(result, []uint16{c})
 	for {
 		if data.index > length {
-			return []uint16{}
+			return []uint16{}, nil
 		}
 
 		bits = 0
@@ -429,7 +438,7 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16
 			for _, r := range result {
 				res = append(res, r...)
 			}
-			return res
+			return res, nil
 		}
 
 		if enlargeIn == 0 {
@@ -444,7 +453,7 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) []uint16
 				entry = append(w[:0:0], w...)
 				entry = append(entry, w[0])
 			} else {
-				return []uint16{}
+				return nil, ErrInputNotDecodable
 			}
 		}
 		result = append(result, entry)
