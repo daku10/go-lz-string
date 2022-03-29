@@ -183,9 +183,9 @@ func init() {
 
 	compressCmd.Flags().StringP("output", "o", "", "Print the output to the output file instead of the standard output.")
 	compressCmd.Flags().VarP(&flagMethodEnum, "method", "m", `Compression method.
-invalid-utf16: invalid UTF-16(output format is UTF-16 Little Endian. Sometimes it contains invalid UTF-16)
+invalid-utf16: invalid UTF-16(output format is UTF-16 Little Endian No BOM. Sometimes it contains invalid UTF-16 code unit)
 base64: base64(output format is UTF-8)
-utf16: valid UTF-16(output format is UTF-16 Little Endian)
+utf16: valid UTF-16(output format is UTF-16 Little Endian No BOM)
 uint8array: uint8 array(output format is []byte)
 encodedURIComponent: URL safe strings like base64(output format is UTF-8)
 `)
