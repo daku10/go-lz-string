@@ -9,13 +9,9 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "go-lz-string",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "compress/decompress using lz-string",
+	Long: `go-lz-string is a CLI application to compress/decompress using lz-string algorithm[https://github.com/pieroxy/lz-string].
+This application implements algorithm is compatible with lz-string@1.4.4`,
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
