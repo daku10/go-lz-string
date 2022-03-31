@@ -1,0 +1,29 @@
+name: Benchmark
+on: [push, pull_request]
+jobs:
+  benchmark:
+    strategy:
+      matrix:
+        go:
+          - 1.18
+    name: Benchmark Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+      - name: Run benchmark
+        run: go test -bench . | tee 'output.txt'
+      - name: Download previous benchmark data
+        uses: actions/cache@v3
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-${{ matrix.go }}-benchmark
+      - name: Store benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          tool: "go"
+          output-file-path: output.txt
+          external-data-json-path: ./cache/benchmark-data.json
+          fail-on-alert: true
