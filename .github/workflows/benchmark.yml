@@ -1,5 +1,8 @@
 name: Benchmark
-on: [push, pull_request]
+on:
+  push:
+    branch:
+      - main
 
 permissions:
   deployments: write
@@ -30,10 +33,10 @@ jobs:
         with:
           tool: "go"
           output-file-path: output.txt
-          external-data-json-path: ./cache/benchmark-data.json
+          # external-data-json-path: ./cache/benchmark-data.json
           fail-on-alert: true
-          gh-pages-branch: gh-pages
-          auto-push: false
-      - name: Push benchmark result
-        if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
-        run: git push 'https://daku10:${{ secrets.GITHUB_TOKEN }}@github.com/daku10/go-lz-string.git' gh-pages:gh-pages
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          auto-push: true
+      # - name: Push benchmark result
+      #   if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
+      #   run: git push 'https://daku10:${{ secrets.GITHUB_TOKEN }}@github.com/daku10/go-lz-string.git' gh-pages:gh-pages
