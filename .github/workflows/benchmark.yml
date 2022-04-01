@@ -32,6 +32,7 @@ jobs:
           output-file-path: output.txt
           external-data-json-path: ./cache/benchmark-data.json
           fail-on-alert: true
+          gh-pages-branch: gh-pages
           auto-push: false
       - name: Push benchmark result
         if: ${{ success() && github.event_name == 'push' && github.ref_name == 'main' }}
