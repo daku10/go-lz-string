@@ -28,152 +28,30 @@ func newCompressCmd() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			var input string
 			var reader io.Reader
 			if inputFilename == "" {
 				reader = os.Stdin
 			} else {
-				f, err := os.Open(inputFilename)
+				inFile, err := os.Open(inputFilename)
 				if err != nil {
 					return err
 				}
-				reader = f
-				defer f.Close()
+				reader = inFile
+				defer inFile.Close()
 			}
-			bytes, err := io.ReadAll(reader)
-			if err != nil {
-				return err
+			var bufWriter *bufio.Writer
+			if outputFilename == "" {
+				bufWriter = bufio.NewWriter(os.Stdout)
+			} else {
+				outFile, err := os.Create(outputFilename)
+				if err != nil {
+					return err
+				}
+				bufWriter = bufio.NewWriter(outFile)
+				defer outFile.Close()
 			}
-			input = string(bytes)
-
-			switch flagMethodEnum {
-			case methodInvalidUTF16:
-				result, err := lzstring.Compress(input)
-				if err != nil {
-					return err
-				}
-				var buf *bufio.Writer
-				if outputFilename != "" {
-					outputF, err := os.Create(outputFilename)
-					if err != nil {
-						return err
-					}
-					defer outputF.Close()
-					buf = bufio.NewWriter(outputF)
-				} else {
-					buf = bufio.NewWriter(os.Stdout)
-				}
-				err = binary.Write(buf, binary.LittleEndian, result)
-				if err != nil {
-					return err
-				}
-				err = buf.Flush()
-				if err != nil {
-					return err
-				}
-				return nil
-			case methodBase64:
-				result, err := lzstring.CompressToBase64(input)
-				if err != nil {
-					return err
-				}
-				var buf *bufio.Writer
-				if outputFilename != "" {
-					outputF, err := os.Create(outputFilename)
-					if err != nil {
-						return err
-					}
-					defer outputF.Close()
-					buf = bufio.NewWriter(outputF)
-				} else {
-					buf = bufio.NewWriter(os.Stdout)
-				}
-				_, err = buf.WriteString(result)
-				if err != nil {
-					return err
-				}
-				err = buf.Flush()
-				if err != nil {
-					return err
-				}
-				return nil
-			case methodUTF16:
-				result, err := lzstring.CompressToUTF16(input)
-				if err != nil {
-					return err
-				}
-				var buf *bufio.Writer
-				if outputFilename != "" {
-					outputF, err := os.Create(outputFilename)
-					if err != nil {
-						return err
-					}
-					defer outputF.Close()
-					buf = bufio.NewWriter(outputF)
-				} else {
-					buf = bufio.NewWriter(os.Stdout)
-				}
-				err = binary.Write(buf, binary.LittleEndian, result)
-				if err != nil {
-					return err
-				}
-				err = buf.Flush()
-				if err != nil {
-					return err
-				}
-				return nil
-			case methodUint8Array:
-				result, err := lzstring.CompressToUint8Array(input)
-				if err != nil {
-					return err
-				}
-				var buf *bufio.Writer
-				if outputFilename != "" {
-					outputF, err := os.Create(outputFilename)
-					if err != nil {
-						return err
-					}
-					defer outputF.Close()
-					buf = bufio.NewWriter(outputF)
-				} else {
-					buf = bufio.NewWriter(os.Stdout)
-				}
-				_, err = buf.Write(result)
-				if err != nil {
-					return err
-				}
-				err = buf.Flush()
-				if err != nil {
-					return err
-				}
-				return nil
-			case methodEncodedURIComponent:
-				result, err := lzstring.CompressToEncodedURIComponent(input)
-				if err != nil {
-					return err
-				}
-				var buf *bufio.Writer
-				if outputFilename != "" {
-					outputF, err := os.Create(outputFilename)
-					if err != nil {
-						return err
-					}
-					defer outputF.Close()
-					buf = bufio.NewWriter(outputF)
-				} else {
-					buf = bufio.NewWriter(os.Stdout)
-				}
-				_, err = buf.WriteString(result)
-				if err != nil {
-					return err
-				}
-				err = buf.Flush()
-				if err != nil {
-					return err
-				}
-				return nil
-			}
-			return errors.New("invalid method is specified")
+			defer bufWriter.Flush()
+			return doCompress(reader, bufWriter, flagMethodEnum)
 		},
 	}
 	compressCmd.Flags().StringP("output", "o", "", "Print the output to the output file instead of the standard output.")
@@ -185,4 +63,63 @@ func newCompressCmd() *cobra.Command {
 	encodedURIComponent: URL safe strings like base64(output format is UTF-8)
 	`)
 	return compressCmd
+}
+
+func doCompress(reader io.Reader, writer io.Writer, method methodEnum) error {
+	bytes, err := io.ReadAll(reader)
+	if err != nil {
+		return err
+	}
+	input := string(bytes)
+
+	switch method {
+	case methodInvalidUTF16:
+		result, err := lzstring.Compress(input)
+		if err != nil {
+			return err
+		}
+		err = binary.Write(writer, binary.LittleEndian, result)
+		return nil
+	case methodBase64:
+		result, err := lzstring.CompressToBase64(input)
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write([]byte(result))
+		if err != nil {
+			return err
+		}
+		return nil
+	case methodUTF16:
+		result, err := lzstring.CompressToUTF16(input)
+		if err != nil {
+			return err
+		}
+		err = binary.Write(writer, binary.LittleEndian, result)
+		if err != nil {
+			return err
+		}
+		return nil
+	case methodUint8Array:
+		result, err := lzstring.CompressToUint8Array(input)
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write([]byte(result))
+		if err != nil {
+			return err
+		}
+		return nil
+	case methodEncodedURIComponent:
+		result, err := lzstring.CompressToEncodedURIComponent(input)
+		if err != nil {
+			return err
+		}
+		_, err = writer.Write([]byte(result))
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	return errors.New("invalid method is specified")
 }
