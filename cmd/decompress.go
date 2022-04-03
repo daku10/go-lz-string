@@ -38,78 +38,19 @@ func newDecompressCmd() *cobra.Command {
 				reader = f
 				defer f.Close()
 			}
-			var result string
-			switch flagMethodEnum {
-			case methodInvalidUTF16:
-				input, err := readAsUint16Array(reader)
-				if err != nil {
-					return err
-				}
-				result, err = lzstring.Decompress(input)
-				if err != nil {
-					return err
-				}
-			case methodUTF16:
-				input, err := readAsUint16Array(reader)
-				if err != nil {
-					return err
-				}
-				result, err = lzstring.DecompressFromUTF16(input)
-				if err != nil {
-					return err
-				}
-			case methodBase64:
-				input, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-				inputString := string(input)
-				result, err = lzstring.DecompressFromBase64(inputString)
-				if err != nil {
-					return err
-				}
-			case methodEncodedURIComponent:
-				input, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-				inputString := string(input)
-				result, err = lzstring.DecompressFromEncodedURIComponent(inputString)
-				if err != nil {
-					return err
-				}
-			case methodUint8Array:
-				input, err := io.ReadAll(reader)
-				if err != nil {
-					return err
-				}
-				result, err = lzstring.DecompressFromUint8Array(input)
-				if err != nil {
-					return err
-				}
-			default:
-				return errors.New("invalid method is specified")
-			}
 			var buf *bufio.Writer
-			if outputFilename != "" {
+			if outputFilename == "" {
+				buf = bufio.NewWriter(os.Stdout)
+			} else {
 				outputF, err := os.Create(outputFilename)
 				if err != nil {
 					return err
 				}
 				buf = bufio.NewWriter(outputF)
 				defer outputF.Close()
-			} else {
-				buf = bufio.NewWriter(os.Stdout)
 			}
-			_, err = buf.WriteString(result)
-			if err != nil {
-				return err
-			}
-			err = buf.Flush()
-			if err != nil {
-				return err
-			}
-			return nil
+			defer buf.Flush()
+			return doDecompress(reader, buf, flagMethodEnum)
 		},
 	}
 
@@ -138,4 +79,64 @@ func readAsUint16Array(reader io.Reader) ([]uint16, error) {
 		result = append(result, uint16(tmp[0])|uint16(tmp[1])<<8)
 	}
 	return result, nil
+}
+
+func doDecompress(reader io.Reader, writer io.Writer, method methodEnum) error {
+	var result string
+	switch method {
+	case methodInvalidUTF16:
+		input, err := readAsUint16Array(reader)
+		if err != nil {
+			return err
+		}
+		result, err = lzstring.Decompress(input)
+		if err != nil {
+			return err
+		}
+	case methodUTF16:
+		input, err := readAsUint16Array(reader)
+		if err != nil {
+			return err
+		}
+		result, err = lzstring.DecompressFromUTF16(input)
+		if err != nil {
+			return err
+		}
+	case methodBase64:
+		input, err := io.ReadAll(reader)
+		if err != nil {
+			return err
+		}
+		inputString := string(input)
+		result, err = lzstring.DecompressFromBase64(inputString)
+		if err != nil {
+			return err
+		}
+	case methodEncodedURIComponent:
+		input, err := io.ReadAll(reader)
+		if err != nil {
+			return err
+		}
+		inputString := string(input)
+		result, err = lzstring.DecompressFromEncodedURIComponent(inputString)
+		if err != nil {
+			return err
+		}
+	case methodUint8Array:
+		input, err := io.ReadAll(reader)
+		if err != nil {
+			return err
+		}
+		result, err = lzstring.DecompressFromUint8Array(input)
+		if err != nil {
+			return err
+		}
+	default:
+		return errors.New("invalid method is specified")
+	}
+	_, err := writer.Write([]byte(result))
+	if err != nil {
+		return err
+	}
+	return nil
 }
