@@ -105,9 +105,9 @@ func CompressToEncodedURIComponent(uncompressed string) (string, error) {
 	return string(utf16.Decode(res)), nil
 }
 
-type GetCharFunc func(i int) []uint16
+type getCharFunc func(i int) []uint16
 
-func _compress(uncompressed string, bitsPerChar int, getCharFromInt GetCharFunc) ([]uint16, error) {
+func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc) ([]uint16, error) {
 	var i, value int
 	contextDictionary := make(map[string]int)
 	contextDictionaryToCreate := make(map[string]bool)
@@ -368,7 +368,7 @@ func getBaseValue(alphabet string, character byte) int {
 	return baseReverseDic[alphabet][character]
 }
 
-type GetNextValFunc = func(index int) int
+type getNextValFunc = func(index int) int
 
 func DecompressFromUTF16(compressed []uint16) (string, error) {
 	if compressed == nil {
@@ -410,13 +410,13 @@ func DecompressFromEncodedURIComponent(compressed string) (string, error) {
 	return string(utf16.Decode(res)), nil
 }
 
-type Data struct {
+type data struct {
 	val      int
 	position int
 	index    int
 }
 
-func _decompress(length int, resetValue int, getNextVal GetNextValFunc) ([]uint16, error) {
+func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint16, error) {
 	// for init
 	dictionary := make(map[uint16][]uint16)
 	var next int
@@ -429,7 +429,7 @@ func _decompress(length int, resetValue int, getNextVal GetNextValFunc) ([]uint1
 	var bits, resb, maxpower, power int
 	var c uint16
 	var w []uint16
-	data := Data{val: getNextVal(0), position: resetValue, index: 1}
+	data := data{val: getNextVal(0), position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
 		dictionary[i] = []uint16{i}
