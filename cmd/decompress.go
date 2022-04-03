@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newDecompressCmd() *cobra.Command {
+func newDecompressCmd(config *Config) *cobra.Command {
 	var flagMethodEnum methodEnum = methodInvalidUTF16
 	var decompressCmd = &cobra.Command{
 		Use:     "decompress",
@@ -29,7 +29,7 @@ func newDecompressCmd() *cobra.Command {
 			}
 			var reader io.Reader
 			if inputFilename == "" {
-				reader = os.Stdin
+				reader = cmd.InOrStdin()
 			} else {
 				f, err := os.Open(inputFilename)
 				if err != nil {
@@ -40,7 +40,7 @@ func newDecompressCmd() *cobra.Command {
 			}
 			var buf *bufio.Writer
 			if outputFilename == "" {
-				buf = bufio.NewWriter(os.Stdout)
+				buf = bufio.NewWriter(cmd.OutOrStdout())
 			} else {
 				outputF, err := os.Create(outputFilename)
 				if err != nil {
@@ -53,7 +53,9 @@ func newDecompressCmd() *cobra.Command {
 			return doDecompress(reader, buf, flagMethodEnum)
 		},
 	}
-
+	decompressCmd.SetIn(config.In)
+	decompressCmd.SetOut(config.Out)
+	decompressCmd.SetErr(config.Err)
 	decompressCmd.Flags().StringP("output", "o", "", "Print the output to the output file instead of the standard output.")
 	decompressCmd.Flags().VarP(&flagMethodEnum, "method", "m", `Compression method.
 invalid-utf16: invalid UTF-16(input format must be UTF-16 Little Endian No BOM. Sometimes it contains invalid UTF-16 code unit)

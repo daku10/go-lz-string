@@ -14,9 +14,14 @@ func newRootCmd() *cobra.Command {
 		Long: `go-lz-string is a CLI application to compress/decompress using lz-string algorithm[https://github.com/pieroxy/lz-string].
 	This application implements algorithm is compatible with lz-string@1.4.4`,
 	}
+	config := &Config{
+		In:  os.Stdin,
+		Out: os.Stdout,
+		Err: os.Stderr,
+	}
 	rootCmd.AddCommand(
-		newCompressCmd(),
-		newDecompressCmd(),
+		newCompressCmd(config),
+		newDecompressCmd(config),
 	)
 	return rootCmd
 }

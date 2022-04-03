@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func newCompressCmd() *cobra.Command {
+func newCompressCmd(config *Config) *cobra.Command {
 	var flagMethodEnum methodEnum = methodInvalidUTF16
 	var compressCmd = &cobra.Command{
 		Use:     "compress file",
@@ -30,7 +30,7 @@ func newCompressCmd() *cobra.Command {
 			}
 			var reader io.Reader
 			if inputFilename == "" {
-				reader = os.Stdin
+				reader = cmd.InOrStdin()
 			} else {
 				inFile, err := os.Open(inputFilename)
 				if err != nil {
@@ -41,7 +41,7 @@ func newCompressCmd() *cobra.Command {
 			}
 			var bufWriter *bufio.Writer
 			if outputFilename == "" {
-				bufWriter = bufio.NewWriter(os.Stdout)
+				bufWriter = bufio.NewWriter(cmd.OutOrStdout())
 			} else {
 				outFile, err := os.Create(outputFilename)
 				if err != nil {
@@ -54,6 +54,9 @@ func newCompressCmd() *cobra.Command {
 			return doCompress(reader, bufWriter, flagMethodEnum)
 		},
 	}
+	compressCmd.SetIn(config.In)
+	compressCmd.SetOut(config.Out)
+	compressCmd.SetErr(config.Err)
 	compressCmd.Flags().StringP("output", "o", "", "Print the output to the output file instead of the standard output.")
 	compressCmd.Flags().VarP(&flagMethodEnum, "method", "m", `Compression method.
 	invalid-utf16: invalid UTF-16(output format is UTF-16 Little Endian No BOM. Sometimes it contains invalid UTF-16 code unit)

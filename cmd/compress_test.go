@@ -61,7 +61,12 @@ func TestCompress(t *testing.T) {
 			assert.Nil(t, err)
 			tmpIn, err := os.CreateTemp(t.TempDir(), "in")
 			assert.Nil(t, err)
-			cmd := newCompressCmd()
+			config := &Config{
+				In:  os.Stdin,
+				Out: os.Stdout,
+				Err: os.Stderr,
+			}
+			cmd := newCompressCmd(config)
 			cmd.SetArgs([]string{"-m", "base64", "-o", tmpOut.Name(), tmpIn.Name()})
 			ioutil.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
 			err = cmd.Execute()
