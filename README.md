@@ -20,7 +20,7 @@ Compression and decompression methods are not only `base64` but also `invalid ut
 ### Installation
 
 ```sh
-go install github.com/daku10/go-lz-string/cli/go-lz-string@latest
+go install github.com/daku10/go-lz-string/cmd/go-lz-string@latest
 go-lz-string help
 ```
 
