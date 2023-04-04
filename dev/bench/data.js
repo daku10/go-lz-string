@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1680613742863,
+  "lastUpdate": 1680613802730,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -540,6 +540,42 @@ window.BENCHMARK_DATA = {
             "value": 1183534,
             "unit": "ns/op",
             "extra": "992 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ad1d4e3255b2b08758aefcb8aff90e21ade8cfae",
+          "message": "Merge pull request #8 from daku10/fix-typo\n\nfix typo",
+          "timestamp": "2023-04-04T22:09:26+09:00",
+          "tree_id": "b52cf1170005aebdb31012218d4cb251023178f7",
+          "url": "https://github.com/daku10/go-lz-string/commit/ad1d4e3255b2b08758aefcb8aff90e21ade8cfae"
+        },
+        "date": 1680613801262,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 5844434,
+            "unit": "ns/op",
+            "extra": "200 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 1199082,
+            "unit": "ns/op",
+            "extra": "1002 times\n2 procs"
           }
         ]
       }
