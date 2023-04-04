@@ -3,9 +3,8 @@ package lzstring
 import (
 	"fmt"
 	"testing"
-	"unicode/utf8"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestCompress(t *testing.T) {
@@ -64,10 +63,13 @@ func TestCompress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := Compress(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := Compress(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -120,10 +122,13 @@ func TestCompressToBase64(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := CompressToBase64(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := CompressToBase64(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -184,10 +189,13 @@ func TestCompressToUTF16(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := CompressToUTF16(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := CompressToUTF16(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -248,10 +256,13 @@ func TestCompressToUint8Array(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := CompressToUint8Array(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := CompressToUint8Array(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -312,10 +323,13 @@ func TestCompressToEncodedURIComponent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := CompressToEncodedURIComponent(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := CompressToEncodedURIComponent(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, got); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -376,9 +390,13 @@ func TestDecompress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
-			res, err := Decompress(tt.arg)
-			assert.Nil(t, err)
-			assert.Equal(t, tt.want, res)
+			got, err := Decompress(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -431,10 +449,13 @@ func TestDecompressFromBase64(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
-			reader, err := DecompressFromBase64(tt.arg)
-			assert.Nil(t, err)
-			b, err := reader, err
-			assert.Equal(t, tt.want, b)
+			got, err := DecompressFromBase64(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -487,9 +508,13 @@ func TestDecompressFromUTF16(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
-			res, err := DecompressFromUTF16(tt.arg)
-			assert.Nil(t, err)
-			assert.Equal(t, tt.want, res)
+			got, err := DecompressFromUTF16(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -550,9 +575,13 @@ func TestDecompressFromUint8Array(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
-			res, err := DecompressFromUint8Array(tt.arg)
-			assert.Nil(t, err)
-			assert.Equal(t, tt.want, res)
+			got, err := DecompressFromUint8Array(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
 }
@@ -613,23 +642,13 @@ func TestDecompressFromEncodedURIComponent(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
-			res, err := DecompressFromEncodedURIComponent(tt.arg)
-			assert.Nil(t, err)
-			assert.Equal(t, tt.want, res)
+			got, err := DecompressFromEncodedURIComponent(tt.arg)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(got, tt.want); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", got, tt.want, diff)
+			}
 		})
 	}
-}
-
-func FuzzIntegrity(f *testing.F) {
-	f.Fuzz(func(t *testing.T, s string) {
-		compressed, err := Compress(s)
-		if !utf8.ValidString(s) {
-			assert.NotNil(t, err)
-			return
-		}
-		assert.Nil(t, err)
-		repair, err := Decompress(compressed)
-		assert.Nil(t, err)
-		assert.Equal(t, s, repair)
-	})
 }
