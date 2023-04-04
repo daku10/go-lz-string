@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -73,7 +72,7 @@ func TestDecompressCmd(t *testing.T) {
 			}
 			cmd := newDecompressCmd(config)
 			cmd.SetArgs([]string{"-m", "base64", "-o", tmpOut.Name(), tmpIn.Name()})
-			err = ioutil.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
+			err = os.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
 			if err != nil {
 				t.Fatalf("expected nil, got: %v", err)
 			}
@@ -81,7 +80,7 @@ func TestDecompressCmd(t *testing.T) {
 			if err != nil {
 				t.Fatalf("expected nil, got: %v", err)
 			}
-			res, err := ioutil.ReadFile(tmpOut.Name())
+			res, err := os.ReadFile(tmpOut.Name())
 			if err != nil {
 				t.Fatalf("expected nil, got: %v", err)
 			}
