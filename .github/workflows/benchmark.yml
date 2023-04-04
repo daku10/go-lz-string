@@ -1,6 +1,9 @@
 name: Benchmark
-on: [push, pull_request]
-
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 permissions:
   deployments: write
   contents: write
