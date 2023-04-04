@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1655645195634,
+  "lastUpdate": 1680592148803,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -216,6 +216,42 @@ window.BENCHMARK_DATA = {
             "value": 981771,
             "unit": "ns/op",
             "extra": "1134 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "daku.two@gmail.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "daku.two@gmail.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "distinct": true,
+          "id": "f091d6b31644e5c866ae9eb39c5b8b787aa34a03",
+          "message": "add goreleaser",
+          "timestamp": "2023-04-04T15:45:57+09:00",
+          "tree_id": "97501c8b2718210a21b33cc3901153d93205713f",
+          "url": "https://github.com/daku10/go-lz-string/commit/f091d6b31644e5c866ae9eb39c5b8b787aa34a03"
+        },
+        "date": 1680592147001,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 4886521,
+            "unit": "ns/op",
+            "extra": "237 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 987866,
+            "unit": "ns/op",
+            "extra": "1078 times\n2 procs"
           }
         ]
       }
