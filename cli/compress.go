@@ -82,6 +82,9 @@ func doCompress(reader io.Reader, writer io.Writer, method methodEnum) error {
 			return err
 		}
 		err = binary.Write(writer, binary.LittleEndian, result)
+		if err != nil {
+			return err
+		}
 		return nil
 	case methodBase64:
 		result, err := lzstring.CompressToBase64(input)

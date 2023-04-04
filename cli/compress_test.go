@@ -72,7 +72,10 @@ func TestCompress(t *testing.T) {
 			}
 			cmd := newCompressCmd(config)
 			cmd.SetArgs([]string{"-m", "base64", "-o", tmpOut.Name(), tmpIn.Name()})
-			ioutil.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
+			err = ioutil.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
 			err = cmd.Execute()
 			if err != nil {
 				t.Fatalf("expected nil, got: %v", err)
