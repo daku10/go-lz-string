@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestDecompressCmd(t *testing.T) {
@@ -58,9 +58,14 @@ func TestDecompressCmd(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.arg, func(t *testing.T) {
 			tmpIn, err := os.CreateTemp(t.TempDir(), "in")
-			assert.Nil(t, err)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
 			tmpOut, err := os.CreateTemp(t.TempDir(), "out")
-			assert.Nil(t, err)
+
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
 			config := &Config{
 				In:  os.Stdin,
 				Out: os.Stdout,
@@ -70,10 +75,16 @@ func TestDecompressCmd(t *testing.T) {
 			cmd.SetArgs([]string{"-m", "base64", "-o", tmpOut.Name(), tmpIn.Name()})
 			ioutil.WriteFile(tmpIn.Name(), []byte(tt.arg), os.ModePerm)
 			err = cmd.Execute()
-			assert.Nil(t, err)
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
 			res, err := ioutil.ReadFile(tmpOut.Name())
-			assert.Nil(t, err)
-			assert.Equal(t, tt.want, string(res))
+			if err != nil {
+				t.Fatalf("expected nil, got: %v", err)
+			}
+			if diff := cmp.Diff(tt.want, string(res)); diff != "" {
+				t.Errorf("got: %v want: %v diff: %v", string(res), tt.want, diff)
+			}
 		})
 	}
 }
