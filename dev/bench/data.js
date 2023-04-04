@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1680598956291,
+  "lastUpdate": 1680602676715,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -432,6 +432,42 @@ window.BENCHMARK_DATA = {
             "value": 917709,
             "unit": "ns/op",
             "extra": "1272 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b96a7de83efe17ef5cde09e1b9438dc2c00846f2",
+          "message": "Merge pull request #6 from daku10/fix-lint\n\nFix lint",
+          "timestamp": "2023-04-04T19:04:15+09:00",
+          "tree_id": "af9d3eaca26eeae418050b03c3dba10a061ccccd",
+          "url": "https://github.com/daku10/go-lz-string/commit/b96a7de83efe17ef5cde09e1b9438dc2c00846f2"
+        },
+        "date": 1680602675939,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 5538507,
+            "unit": "ns/op",
+            "extra": "214 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 1074396,
+            "unit": "ns/op",
+            "extra": "1100 times\n2 procs"
           }
         ]
       }
