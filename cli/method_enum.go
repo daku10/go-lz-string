@@ -6,10 +6,10 @@ type methodEnum string
 
 const (
 	methodInvalidUTF16        methodEnum = "invalid-utf16"
-	methodBase64                         = "base64"
-	methodUTF16                          = "utf16"
-	methodUint8Array                     = "uint8array"
-	methodEncodedURIComponent            = "encodedURIComponent"
+	methodBase64              methodEnum = "base64"
+	methodUTF16               methodEnum = "utf16"
+	methodUint8Array          methodEnum = "uint8array"
+	methodEncodedURIComponent methodEnum = "encodedURIComponent"
 )
 
 func (e *methodEnum) String() string {

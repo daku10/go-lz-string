@@ -76,7 +76,7 @@ func readAsUint16Array(reader io.Reader) ([]uint16, error) {
 			break
 		}
 		if n != 2 {
-			return nil, errors.New("Not Uint16 Array")
+			return nil, errors.New("not Uint16 Array")
 		}
 		result = append(result, uint16(tmp[0])|uint16(tmp[1])<<8)
 	}

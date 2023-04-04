@@ -14,10 +14,10 @@ func f(i int) uint16 {
 }
 
 var (
-	ErrInputInvalidString = errors.New("Input is invalid string")
-	ErrInputNotDecodable  = errors.New("Input is not decodable")
-	ErrInputNil           = errors.New("Input should not be nil")
-	ErrInputBlank         = errors.New("Input should not be blank")
+	ErrInputInvalidString = errors.New("input is invalid string")
+	ErrInputNotDecodable  = errors.New("input is not decodable")
+	ErrInputNil           = errors.New("input should not be nil")
+	ErrInputBlank         = errors.New("input should not be blank")
 )
 
 func Compress(uncompressed string) ([]uint16, error) {
@@ -293,7 +293,8 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 		}
 		contextEnLargeIn--
 		if contextEnLargeIn == 0 {
-			contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
+			// original algorithm has below expression, but this value is unused probably.
+			// contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
 			contextNumBits++
 		}
 	}
@@ -494,7 +495,6 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			power <<= 1
 		}
 		c = f(bits)
-		break
 	case 2:
 		return nil, nil
 	}

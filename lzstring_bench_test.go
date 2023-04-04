@@ -8,12 +8,14 @@ var benchCompressed = []uint16{2433, 20494, 352, 39436, 24754, 8214, 33048, 2461
 
 func BenchmarkCompress(b *testing.B) {
 	for i := 0; i < b.N; i++ {
+		//nolint:errcheck
 		Compress(benchString)
 	}
 }
 
 func BenchmarkDecompress(b *testing.B) {
 	for i := 0; i < b.N; i++ {
+		//nolint:errcheck
 		Decompress(benchCompressed)
 	}
 }
