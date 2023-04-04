@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1680602676715,
+  "lastUpdate": 1680603834067,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -468,6 +468,42 @@ window.BENCHMARK_DATA = {
             "value": 1074396,
             "unit": "ns/op",
             "extra": "1100 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "ebb408ab9d6805f9762d6e8b3ae0f9e0bea9419c",
+          "message": "Merge pull request #7 from daku10/remove-ioutil\n\nremove ioutil",
+          "timestamp": "2023-04-04T19:23:33+09:00",
+          "tree_id": "448e50d133774dad32135460b434f11ac6b78bbb",
+          "url": "https://github.com/daku10/go-lz-string/commit/ebb408ab9d6805f9762d6e8b3ae0f9e0bea9419c"
+        },
+        "date": 1680603833454,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 4600472,
+            "unit": "ns/op",
+            "extra": "258 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 907092,
+            "unit": "ns/op",
+            "extra": "1292 times\n2 procs"
           }
         ]
       }
