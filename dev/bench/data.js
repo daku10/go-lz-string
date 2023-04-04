@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1680592148803,
+  "lastUpdate": 1680592209562,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -252,6 +252,42 @@ window.BENCHMARK_DATA = {
             "value": 987866,
             "unit": "ns/op",
             "extra": "1078 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7adc6e0975e2690f69d7fe02f1f6c19e46377a01",
+          "message": "Create dependabot.yml",
+          "timestamp": "2023-04-04T16:09:47+09:00",
+          "tree_id": "40349ddf3491736b9384331bf485cf8f4dc72643",
+          "url": "https://github.com/daku10/go-lz-string/commit/7adc6e0975e2690f69d7fe02f1f6c19e46377a01"
+        },
+        "date": 1680592208847,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 4603162,
+            "unit": "ns/op",
+            "extra": "256 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 927336,
+            "unit": "ns/op",
+            "extra": "1266 times\n2 procs"
           }
         ]
       }
