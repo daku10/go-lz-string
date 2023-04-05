@@ -58,3 +58,11 @@ func main() {
 
 ## License
 This software is released under the MIT License, see LICENSE.
+
+## Third-party Libraries
+
+This repository contains third-party libraries in the "third-party" directory. Each library is stored as a Git submodule and is subject to the license terms of its respective library.
+
+Please note that these third-party libraries are not developed, maintained, or supported by this repository's maintainers, and any issues or questions related to these libraries should be directed to their respective maintainers.
+
+For more information on the licensing terms of each library, please see the LICENSE file located in each library's directory.

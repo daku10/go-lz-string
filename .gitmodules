@@ -1,0 +1,3 @@
+[submodule "third-party/lz-string"]
+	path = third-party/lz-string
+	url = git@github.com:pieroxy/lz-string.git
