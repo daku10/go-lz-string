@@ -25,6 +25,9 @@ func FuzzIntegrity(f *testing.F) {
 		if err != nil {
 			t.Fatalf("expected nil, got: %v", err)
 		}
+		if s == "0" {
+			t.Fatalf("fail test")
+		}
 
 		f, err := os.CreateTemp(t.TempDir(), "node")
 		if err != nil {
