@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1680613802730,
+  "lastUpdate": 1680716071592,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -576,6 +576,42 @@ window.BENCHMARK_DATA = {
             "value": 1199082,
             "unit": "ns/op",
             "extra": "1002 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "72f1c07c5f45b5bc918e465418971bf334df4547",
+          "message": "Merge pull request #10 from daku10/fuzzing-test\n\nFuzzing test",
+          "timestamp": "2023-04-06T02:34:11+09:00",
+          "tree_id": "6b79c6e0c4bcc4b7926ab56dc7ae90046001ec66",
+          "url": "https://github.com/daku10/go-lz-string/commit/72f1c07c5f45b5bc918e465418971bf334df4547"
+        },
+        "date": 1680716071142,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 4562699,
+            "unit": "ns/op",
+            "extra": "241 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 957730,
+            "unit": "ns/op",
+            "extra": "1273 times\n2 procs"
           }
         ]
       }
