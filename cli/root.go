@@ -22,6 +22,7 @@ This application implements algorithm is compatible with lz-string@1.4.4`,
 	rootCmd.AddCommand(
 		newCompressCmd(config),
 		newDecompressCmd(config),
+		newVersionCmd(config),
 	)
 	return rootCmd
 }
