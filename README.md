@@ -4,7 +4,7 @@
 This is an implementation of lz-string written in Go. You can also embed go-lz-string as a library to your Go products.
 
 ## lz-string algorithm version
-Currently it implements algorithm that is compatible with [lz-string@1.4.4](https://github.com/pieroxy/lz-string/releases/tag/1.4.4)
+Currently it implements algorithm that is compatible with [lz-string@^1.4.4](https://github.com/pieroxy/lz-string/releases/tag/1.4.4)
 
 ## Usage as a CLI
 ```sh
