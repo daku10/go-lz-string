@@ -15,7 +15,7 @@ func newDecompressCmd(config *Config) *cobra.Command {
 	var decompressCmd = &cobra.Command{
 		Use:     "decompress",
 		Short:   "decompress input using lz-string",
-		Long:    `Decompress input using lz-string(compatible 1.4.4). If no file is specified, input is from standard input. Input format is depends on the compression method. Output format is UTF-8 string`,
+		Long:    `Decompress input using lz-string. If no file is specified, input is from standard input. Input format is depends on the compression method. Output format is UTF-8 string`,
 		Example: "  go-lz-string decompress input.txt -m base64 -o output.txt",
 		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {

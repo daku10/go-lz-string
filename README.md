@@ -4,9 +4,29 @@
 This is an implementation of lz-string written in Go. You can also embed go-lz-string as a library to your Go products.
 
 ## lz-string algorithm version
-Currently it implements algorithm that is compatible with [lz-string@1.4.4](https://github.com/pieroxy/lz-string/releases/tag/1.4.4)
+Currently it implements algorithm that is compatible with [lz-string@^1.4.4](https://github.com/pieroxy/lz-string/releases/tag/1.4.4)
 
 ## Usage as a CLI
+
+### Installation
+
+#### From GitHub Releases
+See [GitHub Releases](https://github.com/daku10/go-lz-string/releases).  
+Available binaries are:
+- macOS
+- Linux
+- Windows
+
+#### go install
+
+Go v1.18 or later is required.
+
+```sh
+go install github.com/daku10/go-lz-string/cmd/go-lz-string@latest
+```
+
+### Example
+
 ```sh
 $ go-lz-string compress <filename> -o <output-filename>
 # use standard input/output
@@ -17,15 +37,14 @@ $ echo -n 'jwbjl96cX3kGX2g=' | go-lz-string decompress -m base64
 ```
 Compression and decompression methods are not only `base64` but also `invalid utf-16`, `utf-16`, `encodedURIComponent` and `byte array` are implemented as well as original javascript program. To use other methods, see `go-lz-string help`
 
-### Installation
-
-```sh
-go install github.com/daku10/go-lz-string/cmd/go-lz-string@latest
-go-lz-string help
-```
-
 ## Usage as a library
 
+### Installation
+```sh
+go get -u github.com/daku10/go-lz-string
+```
+
+### Example
 ```go
 package main
 

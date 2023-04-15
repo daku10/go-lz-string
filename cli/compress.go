@@ -16,7 +16,7 @@ func newCompressCmd(config *Config) *cobra.Command {
 	var compressCmd = &cobra.Command{
 		Use:     "compress file",
 		Short:   "compress input using lz-string",
-		Long:    `Compress input using lz-string(compatible 1.4.4). If no file is specified, input is from standard input. Input format must be UTF-8 string. Output format depends on the compression method.`,
+		Long:    `Compress input using lz-string. If no file is specified, input is from standard input. Input format must be UTF-8 string. Output format depends on the compression method.`,
 		Example: "  go-lz-string compress input.txt -m base64 -o output.txt",
 		Args:    cobra.MaximumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
