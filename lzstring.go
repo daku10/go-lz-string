@@ -5,9 +5,9 @@
 package lzstring
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
-	"math"
+	"strconv"
 	"strings"
 	"unicode/utf16"
 	"unicode/utf8"
@@ -125,6 +125,28 @@ func CompressToEncodedURIComponent(uncompressed string) (string, error) {
 
 type getCharFunc func(i int) []uint16
 
+// make consistency with slice of uint16 to be enclosed with bracket.
+func uint16ToString(x uint16) string {
+	var b bytes.Buffer
+	b.WriteByte('[')
+	b.WriteString(strconv.Itoa(int(x)))
+	b.WriteByte(']')
+	return b.String()
+}
+
+func uint16sToString(xs []uint16) string {
+	var b bytes.Buffer
+	b.WriteByte('[')
+	for i, x := range xs {
+		b.WriteString(strconv.Itoa(int(x)))
+		if i != len(xs)-1 {
+			b.WriteByte(',')
+		}
+	}
+	b.WriteByte(']')
+	return b.String()
+}
+
 func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc) ([]uint16, error) {
 	var i, value int
 	contextDictionary := make(map[string]int)
@@ -141,8 +163,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 	uncompressedRune := utf16.Encode([]rune(uncompressed))
 	for ii = 0; ii < len(uncompressedRune); ii++ {
 		contextC = uncompressedRune[ii]
-		// contextW, contextWC are slice of runes, keys should be enclosed in brackets
-		contextCKey := fmt.Sprintf("[%d]", contextC)
+		contextCKey := uint16ToString(contextC)
 		if _, ok := contextDictionary[contextCKey]; !ok {
 			contextDictionary[contextCKey] = contextDictSize
 			contextDictSize++
@@ -151,8 +172,8 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 		contextWC = make([]uint16, len(contextW))
 		copy(contextWC, contextW)
 		contextWC = append(contextWC, contextC)
-		contextWCKey := fmt.Sprint(contextWC)
-		contextWKey := fmt.Sprint(contextW)
+		contextWCKey := uint16sToString(contextWC)
+		contextWKey := uint16sToString(contextW)
 		if _, ok := contextDictionary[contextWCKey]; ok {
 			contextW = contextWC
 		} else {
@@ -208,7 +229,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 				}
 				contextEnLargeIn--
 				if contextEnLargeIn == 0 {
-					contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
+					contextEnLargeIn = 1 << contextNumBits
 					contextNumBits++
 				}
 				delete(contextDictionaryToCreate, contextWKey)
@@ -228,17 +249,16 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 			}
 			contextEnLargeIn--
 			if contextEnLargeIn == 0 {
-				contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
+				contextEnLargeIn = 1 << contextNumBits
 				contextNumBits++
 			}
-			contextDictionary[fmt.Sprint(contextWC)] = contextDictSize
+			contextDictionary[uint16sToString(contextWC)] = contextDictSize
 			contextDictSize++
 			contextW = []uint16{contextC}
 		}
 	}
-
 	if len(contextW) != 0 {
-		contextWKey := fmt.Sprint(contextW)
+		contextWKey := uint16sToString(contextW)
 		if _, ok := contextDictionaryToCreate[contextWKey]; ok {
 			if contextW[0] < 256 {
 				for i = 0; i < contextNumBits; i++ {
@@ -291,7 +311,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 			}
 			contextEnLargeIn--
 			if contextEnLargeIn == 0 {
-				contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
+				contextEnLargeIn = 1 << contextNumBits
 				contextNumBits++
 			}
 			delete(contextDictionaryToCreate, contextWKey)
@@ -312,7 +332,7 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 		contextEnLargeIn--
 		if contextEnLargeIn == 0 {
 			// original algorithm has below expression, but this value is unused probably.
-			// contextEnLargeIn = int(math.Pow(2, float64(contextNumBits)))
+			// contextEnLargeIn = 1 << contextNumBits
 			contextNumBits++
 		}
 	}
@@ -464,7 +484,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		dictionary[i] = []uint16{i}
 	}
 	bits = 0
-	maxpower = int(math.Pow(2, 2))
+	maxpower = 4 // int(math.Pow(2,2))
 	power = 1
 	for power != maxpower {
 		resb = data.val & data.position
@@ -485,7 +505,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 	switch next {
 	case 0:
 		bits = 0
-		maxpower = int(math.Pow(2, 8))
+		maxpower = 256 // int(math.Pow(2,8))
 		power = 1
 		for power != maxpower {
 			resb = data.val & data.position
@@ -505,7 +525,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		c = f(bits)
 	case 1:
 		bits = 0
-		maxpower = int(math.Pow(2, 16))
+		maxpower = 65536 // int(math.Pow(2, 16))
 		power = 1
 		for power != maxpower {
 			resb = data.val & data.position
@@ -535,7 +555,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		}
 
 		bits = 0
-		maxpower = int(math.Pow(2, float64(numBits)))
+		maxpower = 1 << numBits
 		power = 1
 		for power != maxpower {
 			resb = data.val & data.position
@@ -557,7 +577,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		switch c {
 		case 0:
 			bits = 0
-			maxpower = int(math.Pow(2, 8))
+			maxpower = 256 //int(math.Pow(2, 8))
 			power = 1
 			for power != maxpower {
 				resb = data.val & data.position
@@ -581,7 +601,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			enlargeIn--
 		case 1:
 			bits = 0
-			maxpower = int(math.Pow(2, 16))
+			maxpower = 65536 // int(math.Pow(2, 16))
 			power = 1
 			for power != maxpower {
 				resb = data.val & data.position
@@ -611,7 +631,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		}
 
 		if enlargeIn == 0 {
-			enlargeIn = int(math.Pow(2, float64(numBits)))
+			enlargeIn = 1 << numBits
 			numBits++
 		}
 
@@ -639,7 +659,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		w = entry
 
 		if enlargeIn == 0 {
-			enlargeIn = int(math.Pow(2, float64(numBits)))
+			enlargeIn = 1 << numBits
 			numBits++
 		}
 	}
