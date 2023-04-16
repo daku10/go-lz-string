@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1681568158649,
+  "lastUpdate": 1681646365939,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -720,6 +720,42 @@ window.BENCHMARK_DATA = {
             "value": 902787,
             "unit": "ns/op",
             "extra": "1264 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "99b210c6a17aaccfb753d8da8cbbb2278c509387",
+          "message": "Merge pull request #15 from daku10/add-godoc\n\nadd godoc",
+          "timestamp": "2023-04-16T20:58:55+09:00",
+          "tree_id": "8b9ce8cbe4181d8ccd1da7d21d5fc90cda1aa986",
+          "url": "https://github.com/daku10/go-lz-string/commit/99b210c6a17aaccfb753d8da8cbbb2278c509387"
+        },
+        "date": 1681646364961,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 4594513,
+            "unit": "ns/op",
+            "extra": "258 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 901901,
+            "unit": "ns/op",
+            "extra": "1304 times\n2 procs"
           }
         ]
       }
