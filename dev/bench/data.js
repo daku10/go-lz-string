@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1681650359584,
+  "lastUpdate": 1681650871993,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -792,6 +792,42 @@ window.BENCHMARK_DATA = {
             "value": 854535,
             "unit": "ns/op",
             "extra": "1360 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6416c2c3a4c367ed2c0fb9a2ccdba159a4a9276d",
+          "message": "Merge pull request #16 from daku10/tagpr-from-v0.0.4\n\nRelease for v0.0.5",
+          "timestamp": "2023-04-16T22:14:05+09:00",
+          "tree_id": "c9d4079a970bfaf23cd5a9f4f44be7efcc1dc142",
+          "url": "https://github.com/daku10/go-lz-string/commit/6416c2c3a4c367ed2c0fb9a2ccdba159a4a9276d"
+        },
+        "date": 1681650871562,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 2307796,
+            "unit": "ns/op",
+            "extra": "518 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 808909,
+            "unit": "ns/op",
+            "extra": "1449 times\n2 procs"
           }
         ]
       }
