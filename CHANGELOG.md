@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.5](https://github.com/daku10/go-lz-string/compare/v0.0.4...v0.0.5) - 2023-04-16
+- add godoc by @daku10 in https://github.com/daku10/go-lz-string/pull/15
+- improve performance by @daku10 in https://github.com/daku10/go-lz-string/pull/17
+
 ## [v0.0.4](https://github.com/daku10/go-lz-string/compare/v0.0.3...v0.0.4) - 2023-04-15
 - Introduce tagpr by @daku10 in https://github.com/daku10/go-lz-string/pull/12
 - Fix readme by @daku10 in https://github.com/daku10/go-lz-string/pull/14
