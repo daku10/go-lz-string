@@ -1,3 +1,7 @@
+// Package lzstring implements the LZ-String algorithm for string compression
+// and decompression. The library features two main sets of functions,
+// Compress and Decompress, which are used to compress and decompress strings,
+// respectively.
 package lzstring
 
 import (
@@ -20,6 +24,10 @@ var (
 	ErrInputBlank         = errors.New("input should not be blank")
 )
 
+// Compress takes an uncompressed string and compresses it into a slice of uint16.
+// It returns an error if the input string is not a valid UTF-8 string.
+// Note: The resulting uint16 slice may contain invalid UTF-16 characters,
+// which is consistent with the original algorithm's behavior.
 func Compress(uncompressed string) ([]uint16, error) {
 	if !utf8.ValidString(uncompressed) {
 		return nil, ErrInputInvalidString
@@ -32,6 +40,8 @@ func Compress(uncompressed string) ([]uint16, error) {
 
 const keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
 
+// CompressToBase64 takes an uncompressed string and compresses it into a Base64 string.
+// It returns an error if the input string is not a valid UTF-8 string.
 func CompressToBase64(uncompressed string) (string, error) {
 	if !utf8.ValidString(uncompressed) {
 		return "", ErrInputInvalidString
@@ -57,6 +67,9 @@ func CompressToBase64(uncompressed string) (string, error) {
 	}
 }
 
+// CompressToUTF16 takes an uncompressed string and compresses it into a slice of uint16,
+// where each element represents a UTF-16 encoded character.
+// It returns an error if the input string is not a valid UTF-8 string.
 func CompressToUTF16(uncompressed string) ([]uint16, error) {
 	if !utf8.ValidString(uncompressed) {
 		return nil, ErrInputInvalidString
@@ -72,6 +85,8 @@ func CompressToUTF16(uncompressed string) ([]uint16, error) {
 	return res, nil
 }
 
+// CompressToUint8Array takes an uncompressed string and compresses it into a slice of bytes.
+// It returns an error if the input string is not a valid UTF-8 string.
 func CompressToUint8Array(uncompressed string) ([]byte, error) {
 	if !utf8.ValidString(uncompressed) {
 		return nil, ErrInputInvalidString
@@ -92,6 +107,9 @@ func CompressToUint8Array(uncompressed string) ([]byte, error) {
 
 const keyStrUriSafe = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$"
 
+// CompressToEncodedURIComponent takes an uncompressed string and compresses it into
+// a URL-safe string, where special characters are replaced with safe alternatives.
+// It returns an error if the input string is not a valid UTF-8 string.
 func CompressToEncodedURIComponent(uncompressed string) (string, error) {
 	if !utf8.ValidString(uncompressed) {
 		return "", ErrInputInvalidString
@@ -328,6 +346,8 @@ func _compress(uncompressed string, bitsPerChar int, getCharFromInt getCharFunc)
 	return result, nil
 }
 
+// Decompress takes a compressed slice of uint16 main contain invalid UTF-16 characters and decompresses it into a string.
+// It returns an error if the input is not a valid compressed data.
 func Decompress(compressed []uint16) (string, error) {
 	if compressed == nil {
 		return "", ErrInputNil
@@ -344,6 +364,8 @@ func Decompress(compressed []uint16) (string, error) {
 	return string(utf16.Decode(res)), nil
 }
 
+// DecompressFromBase64 takes a compressed Base64 string and decompresses it into a string.
+// It returns an error if the input is not a valid compressed data.
 func DecompressFromBase64(compressed string) (string, error) {
 	if compressed == "" {
 		return "", ErrInputBlank
@@ -371,6 +393,8 @@ func getBaseValue(alphabet string, character byte) int {
 
 type getNextValFunc = func(index int) int
 
+// DecompressFromUTF16 takes a compressed slice of uint16 UTF-16 characters and decompresses it into a string.
+// It returns an error if the input is not a valid compressed data.
 func DecompressFromUTF16(compressed []uint16) (string, error) {
 	if compressed == nil {
 		return "", ErrInputNil
@@ -387,6 +411,8 @@ func DecompressFromUTF16(compressed []uint16) (string, error) {
 	return string(utf16.Decode(res)), nil
 }
 
+// DecompressFromUint8Array takes a compressed slice of bytes and decompresses it into a string.
+// It returns an error if the input is not a valid compressed data.
 func DecompressFromUint8Array(compressed []byte) (string, error) {
 	if compressed == nil {
 		return "", ErrInputNil
@@ -400,6 +426,8 @@ func DecompressFromUint8Array(compressed []byte) (string, error) {
 	return Decompress(buf)
 }
 
+// DecompressFromEncodedURIComponent takes a compressed URL-encoded string and decompresses it into a string.
+// It returns an error if the input is not a valid compressed data.
 func DecompressFromEncodedURIComponent(compressed string) (string, error) {
 	replaced := strings.Replace(compressed, " ", "+", -1)
 	res, err := _decompress(len(replaced), 32, func(index int) int {
