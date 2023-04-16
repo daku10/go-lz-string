@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1681646365939,
+  "lastUpdate": 1681650359584,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -756,6 +756,42 @@ window.BENCHMARK_DATA = {
             "value": 901901,
             "unit": "ns/op",
             "extra": "1304 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c19d1715296d5c758f16c8a87ee67bedc01ab9f5",
+          "message": "Merge pull request #17 from daku10/improve-performance\n\nimprove performance",
+          "timestamp": "2023-04-16T22:05:28+09:00",
+          "tree_id": "376c7c8677346c4620381056bc2136b9d898df23",
+          "url": "https://github.com/daku10/go-lz-string/commit/c19d1715296d5c758f16c8a87ee67bedc01ab9f5"
+        },
+        "date": 1681650358858,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 2499822,
+            "unit": "ns/op",
+            "extra": "490 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 854535,
+            "unit": "ns/op",
+            "extra": "1360 times\n2 procs"
           }
         ]
       }
