@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1696333879816,
+  "lastUpdate": 1696336383401,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -972,6 +972,42 @@ window.BENCHMARK_DATA = {
             "value": 824712,
             "unit": "ns/op",
             "extra": "1418 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "029fec8794cee6de144db1efcba2ee0258d9201f",
+          "message": "Merge pull request #23 from daku10/fix-use-official-action\n\nremove persist-credentials",
+          "timestamp": "2023-10-03T21:32:43+09:00",
+          "tree_id": "aac9934f378a4470fad032d8ffb19e25a48ef674",
+          "url": "https://github.com/daku10/go-lz-string/commit/029fec8794cee6de144db1efcba2ee0258d9201f"
+        },
+        "date": 1696336382867,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 2354751,
+            "unit": "ns/op",
+            "extra": "505 times\n2 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 819034,
+            "unit": "ns/op",
+            "extra": "1432 times\n2 procs"
           }
         ]
       }
