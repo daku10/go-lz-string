@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1698842681441,
+  "lastUpdate": 1701696808177,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -1080,6 +1080,42 @@ window.BENCHMARK_DATA = {
             "value": 1094636,
             "unit": "ns/op",
             "extra": "1182 times\n2 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8071cb6b4dcd42f63a47795f35e8fd74113df65a",
+          "message": "Merge pull request #26 from daku10/dependabot/go_modules/github.com/spf13/cobra-1.8.0\n\nBump github.com/spf13/cobra from 1.7.0 to 1.8.0",
+          "timestamp": "2023-12-04T22:33:00+09:00",
+          "tree_id": "e75e51286cc67bc14e8650993841f2071870b848",
+          "url": "https://github.com/daku10/go-lz-string/commit/8071cb6b4dcd42f63a47795f35e8fd74113df65a"
+        },
+        "date": 1701696807199,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 1933147,
+            "unit": "ns/op",
+            "extra": "613 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 645576,
+            "unit": "ns/op",
+            "extra": "1854 times\n4 procs"
           }
         ]
       }
