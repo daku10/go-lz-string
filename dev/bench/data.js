@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1704278422463,
+  "lastUpdate": 1706112909744,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -1188,6 +1188,42 @@ window.BENCHMARK_DATA = {
             "value": 641118,
             "unit": "ns/op",
             "extra": "1802 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "08d622510ea91ffd22ceef1ece899633264480f2",
+          "message": "Merge pull request #30 from daku10/fix-bug-decompression-invalid-string\n\nFix bug decompression invalid string",
+          "timestamp": "2024-01-25T01:14:46+09:00",
+          "tree_id": "81ef70cc5500a206814e5d1d2cda5f509045aa46",
+          "url": "https://github.com/daku10/go-lz-string/commit/08d622510ea91ffd22ceef1ece899633264480f2"
+        },
+        "date": 1706112909327,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 1908232,
+            "unit": "ns/op",
+            "extra": "621 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 648991,
+            "unit": "ns/op",
+            "extra": "1792 times\n4 procs"
           }
         ]
       }
