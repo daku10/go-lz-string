@@ -216,25 +216,25 @@ func FuzzIntegrityEncodedURIComponent(f *testing.F) {
 
 func FuzzDecodeCompletesNoPanic(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s []byte) {
-		Decompress(byteToUint16(s))
+		_, _ = Decompress(byteToUint16(s))
 	})
 }
 
 func FuzzDecodeBase64CompletesNoPanic(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s []byte) {
-		DecompressFromBase64(string(s))
+		_, _ = DecompressFromBase64(string(s))
 	})
 }
 
 func FuzzDecodeUTF16CompletesNoPanic(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s []byte) {
-		DecompressFromUTF16(byteToUint16(s))
+		_, _ = DecompressFromUTF16(byteToUint16(s))
 	})
 }
 
 func FuzzDecodeUint8ArrayCompletesNoPanic(f *testing.F) {
 	f.Fuzz(func(t *testing.T, s []byte) {
-		DecompressFromUint8Array(s)
+		_, _ = DecompressFromUint8Array(s)
 	})
 }
 
