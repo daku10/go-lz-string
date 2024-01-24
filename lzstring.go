@@ -373,10 +373,13 @@ func Decompress(compressed []uint16) (string, error) {
 		return "", ErrInputNil
 	}
 	if len(compressed) == 0 {
-		return "", nil
+		return "", ErrInputBlank
 	}
-	res, err := _decompress(len(compressed), 32768, func(index int) int {
-		return int(compressed[index])
+	res, err := _decompress(len(compressed), 32768, func(index int) (int, error) {
+		if index >= len(compressed) {
+			return 0, ErrInputNotDecodable
+		}
+		return int(compressed[index]), nil
 	})
 	if err != nil {
 		return "", err
@@ -390,8 +393,11 @@ func DecompressFromBase64(compressed string) (string, error) {
 	if compressed == "" {
 		return "", ErrInputBlank
 	}
-	res, err := _decompress(len(compressed), 32, func(index int) int {
-		return getBaseValue(keyStrBase64, compressed[index])
+	res, err := _decompress(len(compressed), 32, func(index int) (int, error) {
+		if index >= len(compressed) {
+			return 0, ErrInputNotDecodable
+		}
+		return getBaseValue(keyStrBase64, compressed[index]), nil
 	})
 	if err != nil {
 		return "", err
@@ -411,7 +417,7 @@ func getBaseValue(alphabet string, character byte) int {
 	return baseReverseDic[alphabet][character]
 }
 
-type getNextValFunc = func(index int) int
+type getNextValFunc = func(index int) (int, error)
 
 // DecompressFromUTF16 takes a compressed slice of uint16 UTF-16 characters and decompresses it into a string.
 // It returns an error if the input is not a valid compressed data.
@@ -422,8 +428,11 @@ func DecompressFromUTF16(compressed []uint16) (string, error) {
 	if len(compressed) == 0 {
 		return "", ErrInputBlank
 	}
-	res, err := _decompress(len(compressed), 16384, func(index int) int {
-		return int(compressed[index] - 32)
+	res, err := _decompress(len(compressed), 16384, func(index int) (int, error) {
+		if index >= len(compressed) {
+			return 0, ErrInputNotDecodable
+		}
+		return int(compressed[index] - 32), nil
 	})
 	if err != nil {
 		return "", err
@@ -436,6 +445,9 @@ func DecompressFromUTF16(compressed []uint16) (string, error) {
 func DecompressFromUint8Array(compressed []byte) (string, error) {
 	if compressed == nil {
 		return "", ErrInputNil
+	}
+	if len(compressed) == 0 {
+		return "", ErrInputBlank
 	}
 	length := len(compressed) / 2
 	buf := make([]uint16, len(compressed)/2)
@@ -450,8 +462,14 @@ func DecompressFromUint8Array(compressed []byte) (string, error) {
 // It returns an error if the input is not a valid compressed data.
 func DecompressFromEncodedURIComponent(compressed string) (string, error) {
 	replaced := strings.Replace(compressed, " ", "+", -1)
-	res, err := _decompress(len(replaced), 32, func(index int) int {
-		return getBaseValue(keyStrUriSafe, replaced[index])
+	if replaced == "" {
+		return "", ErrInputBlank
+	}
+	res, err := _decompress(len(replaced), 32, func(index int) (int, error) {
+		if index >= len(replaced) {
+			return 0, ErrInputNotDecodable
+		}
+		return getBaseValue(keyStrUriSafe, replaced[index]), nil
 	})
 	if err != nil {
 		return "", err
@@ -478,7 +496,11 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 	var bits, resb, maxpower, power int
 	var c uint16
 	var w []uint16
-	data := data{val: getNextVal(0), position: resetValue, index: 1}
+	val, err := getNextVal(0)
+	if err != nil {
+		return nil, err
+	}
+	data := data{val: val, position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
 		dictionary[i] = []uint16{i}
@@ -491,7 +513,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		data.position >>= 1
 		if data.position == 0 {
 			data.position = resetValue
-			data.val = getNextVal(data.index)
+			data.val, err = getNextVal(data.index)
+			if err != nil {
+				return nil, err
+			}
 			data.index += 1
 		}
 		tmp := 0
@@ -512,7 +537,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			data.position >>= 1
 			if data.position == 0 {
 				data.position = resetValue
-				data.val = getNextVal(data.index)
+				data.val, err = getNextVal(data.index)
+				if err != nil {
+					return nil, err
+				}
 				data.index += 1
 			}
 			tmp := 0
@@ -532,7 +560,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			data.position >>= 1
 			if data.position == 0 {
 				data.position = resetValue
-				data.val = getNextVal(data.index)
+				data.val, err = getNextVal(data.index)
+				if err != nil {
+					return nil, err
+				}
 				data.index += 1
 			}
 			tmp := 0
@@ -551,9 +582,8 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 	result = append(result, []uint16{c})
 	for {
 		if data.index > length {
-			return []uint16{}, nil
+			return nil, ErrInputNotDecodable
 		}
-
 		bits = 0
 		maxpower = 1 << numBits
 		power = 1
@@ -562,7 +592,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			data.position >>= 1
 			if data.position == 0 {
 				data.position = resetValue
-				data.val = getNextVal(data.index)
+				data.val, err = getNextVal(data.index)
+				if err != nil {
+					return nil, err
+				}
 				data.index += 1
 			}
 			tmp := 0
@@ -584,7 +617,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 				data.position >>= 1
 				if data.position == 0 {
 					data.position = resetValue
-					data.val = getNextVal(data.index)
+					data.val, err = getNextVal(data.index)
+					if err != nil {
+						return nil, err
+					}
 					data.index++
 				}
 				tmp := 0
@@ -608,7 +644,10 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 				data.position >>= 1
 				if data.position == 0 {
 					data.position = resetValue
-					data.val = getNextVal(data.index)
+					data.val, err = getNextVal(data.index)
+					if err != nil {
+						return nil, err
+					}
 					data.index++
 				}
 				tmp := 0

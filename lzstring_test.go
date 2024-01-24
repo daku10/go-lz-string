@@ -340,7 +340,7 @@ func TestDecompress(t *testing.T) {
 		want string
 	}{
 		{
-			arg:  []uint16{},
+			arg:  []uint16{0x4000},
 			want: "",
 		},
 		{
