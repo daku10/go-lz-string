@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.0.6](https://github.com/daku10/go-lz-string/compare/v0.0.5...v0.0.6) - 2024-01-24
+- Bump github.com/spf13/cobra from 1.6.1 to 1.7.0 by @dependabot in https://github.com/daku10/go-lz-string/pull/18
+- Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/20
+- Bump goreleaser/goreleaser-action from 4 to 5 by @dependabot in https://github.com/daku10/go-lz-string/pull/21
+- use official create-github-app-token by @daku10 in https://github.com/daku10/go-lz-string/pull/22
+- remove persist-credentials by @daku10 in https://github.com/daku10/go-lz-string/pull/23
+- Bump actions/setup-node from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/25
+- Bump github.com/google/go-cmp from 0.5.9 to 0.6.0 by @dependabot in https://github.com/daku10/go-lz-string/pull/24
+- Bump github.com/spf13/cobra from 1.7.0 to 1.8.0 by @dependabot in https://github.com/daku10/go-lz-string/pull/26
+- Bump actions/setup-go from 4 to 5 by @dependabot in https://github.com/daku10/go-lz-string/pull/27
+- fix deprecated by @daku10 in https://github.com/daku10/go-lz-string/pull/28
+- Fix bug decompression invalid string by @daku10 in https://github.com/daku10/go-lz-string/pull/30
+
 ## [v0.0.5](https://github.com/daku10/go-lz-string/compare/v0.0.4...v0.0.5) - 2023-04-16
 - add godoc by @daku10 in https://github.com/daku10/go-lz-string/pull/15
 - improve performance by @daku10 in https://github.com/daku10/go-lz-string/pull/17
