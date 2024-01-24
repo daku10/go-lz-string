@@ -213,3 +213,39 @@ func FuzzIntegrityEncodedURIComponent(f *testing.F) {
 		}
 	})
 }
+
+func FuzzDecodeCompletesNoPanic(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s []byte) {
+		_, _ = Decompress(byteToUint16(s))
+	})
+}
+
+func FuzzDecodeBase64CompletesNoPanic(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s []byte) {
+		_, _ = DecompressFromBase64(string(s))
+	})
+}
+
+func FuzzDecodeUTF16CompletesNoPanic(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s []byte) {
+		_, _ = DecompressFromUTF16(byteToUint16(s))
+	})
+}
+
+func FuzzDecodeUint8ArrayCompletesNoPanic(f *testing.F) {
+	f.Fuzz(func(t *testing.T, s []byte) {
+		_, _ = DecompressFromUint8Array(s)
+	})
+}
+
+func byteToUint16(b []byte) []uint16 {
+	var u []uint16
+	for i := 0; i < len(b); i += 2 {
+		if i+1 < len(b) {
+			u = append(u, binary.LittleEndian.Uint16(b[i:i+2]))
+		} else {
+			u = append(u, uint16(b[i]))
+		}
+	}
+	return u
+}
