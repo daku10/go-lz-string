@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1706860591764,
+  "lastUpdate": 1709300597990,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -1296,6 +1296,42 @@ window.BENCHMARK_DATA = {
             "value": 628010,
             "unit": "ns/op",
             "extra": "1849 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7d1177486143f7d4be2602992cb1a23662b2a119",
+          "message": "Merge pull request #33 from daku10/dependabot/github_actions/golangci/golangci-lint-action-4\n\nBump golangci/golangci-lint-action from 3 to 4",
+          "timestamp": "2024-03-01T22:42:47+09:00",
+          "tree_id": "eeeb8594e5ef232312bf787ba05a76fd7b0d7c7c",
+          "url": "https://github.com/daku10/go-lz-string/commit/7d1177486143f7d4be2602992cb1a23662b2a119"
+        },
+        "date": 1709300597153,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 1837111,
+            "unit": "ns/op",
+            "extra": "652 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 618079,
+            "unit": "ns/op",
+            "extra": "1915 times\n4 procs"
           }
         ]
       }
