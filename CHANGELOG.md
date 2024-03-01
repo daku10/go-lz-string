@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.0.7](https://github.com/daku10/go-lz-string/compare/v0.0.6...v0.0.7) - 2024-03-01
+- Bump actions/cache from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/31
+- Bump golangci/golangci-lint-action from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/33
+
 ## [v0.0.6](https://github.com/daku10/go-lz-string/compare/v0.0.5...v0.0.6) - 2024-01-24
 - Bump github.com/spf13/cobra from 1.6.1 to 1.7.0 by @dependabot in https://github.com/daku10/go-lz-string/pull/18
 - Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/20
