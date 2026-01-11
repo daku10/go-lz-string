@@ -377,7 +377,9 @@ func Decompress(compressed []uint16) (string, error) {
 	}
 	res, err := _decompress(len(compressed), 32768, func(index int) (int, error) {
 		if index >= len(compressed) {
-			return 0, ErrInputNotDecodable
+			// Match JavaScript behavior: out-of-bounds reads return undefined,
+			// which becomes 0 in bitwise operations.
+			return 0, nil
 		}
 		return int(compressed[index]), nil
 	})
@@ -395,7 +397,9 @@ func DecompressFromBase64(compressed string) (string, error) {
 	}
 	res, err := _decompress(len(compressed), 32, func(index int) (int, error) {
 		if index >= len(compressed) {
-			return 0, ErrInputNotDecodable
+			// Match JavaScript behavior: out-of-bounds reads return undefined,
+			// which becomes 0 in bitwise operations.
+			return 0, nil
 		}
 		return getBaseValue(keyStrBase64, compressed[index]), nil
 	})
@@ -430,7 +434,9 @@ func DecompressFromUTF16(compressed []uint16) (string, error) {
 	}
 	res, err := _decompress(len(compressed), 16384, func(index int) (int, error) {
 		if index >= len(compressed) {
-			return 0, ErrInputNotDecodable
+			// Match JavaScript behavior: out-of-bounds reads return undefined,
+			// which becomes 0 in bitwise operations.
+			return 0, nil
 		}
 		return int(compressed[index] - 32), nil
 	})
@@ -467,7 +473,11 @@ func DecompressFromEncodedURIComponent(compressed string) (string, error) {
 	}
 	res, err := _decompress(len(replaced), 32, func(index int) (int, error) {
 		if index >= len(replaced) {
-			return 0, ErrInputNotDecodable
+			// Match JavaScript behavior: out-of-bounds reads return undefined,
+			// which becomes 0 in bitwise operations. This allows the decompression
+			// algorithm to properly find the end marker even when it needs to read
+			// a few bits past the nominal end of the input.
+			return 0, nil
 		}
 		return getBaseValue(keyStrUriSafe, replaced[index]), nil
 	})
@@ -485,16 +495,16 @@ type data struct {
 
 func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint16, error) {
 	// for init
-	dictionary := make(map[uint16][]uint16)
+	dictionary := make(map[int][]uint16)
 	var next int
 	enlargeIn := 4
 	dictSize := 4
 	numBits := 3
 	var entry []uint16
 	result := make([][]uint16, 0)
-	var i uint16
+	var i int
 	var bits, resb, maxpower, power int
-	var c uint16
+	var c int
 	var w []uint16
 	val, err := getNextVal(0)
 	if err != nil {
@@ -503,7 +513,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 	data := data{val: val, position: resetValue, index: 1}
 
 	for i = 0; i < 3; i++ {
-		dictionary[i] = []uint16{i}
+		dictionary[i] = []uint16{uint16(i)}
 	}
 	bits = 0
 	maxpower = 4 // int(math.Pow(2,2))
@@ -550,7 +560,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			bits |= tmp * power
 			power <<= 1
 		}
-		c = f(bits)
+		c = bits
 	case 1:
 		bits = 0
 		maxpower = 65536 // int(math.Pow(2, 16))
@@ -573,13 +583,13 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			bits |= tmp * power
 			power <<= 1
 		}
-		c = f(bits)
+		c = bits
 	case 2:
 		return nil, nil
 	}
-	dictionary[3] = []uint16{c}
-	w = []uint16{c}
-	result = append(result, []uint16{c})
+	dictionary[3] = []uint16{uint16(c)}
+	w = []uint16{uint16(c)}
+	result = append(result, []uint16{uint16(c)})
 	for {
 		if data.index > length {
 			return nil, ErrInputNotDecodable
@@ -606,7 +616,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			power <<= 1
 		}
 
-		c = f(bits)
+		c = bits
 		switch c {
 		case 0:
 			bits = 0
@@ -631,9 +641,9 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 				power <<= 1
 			}
 
-			dictionary[uint16(dictSize)] = []uint16{f(bits)}
+			dictionary[dictSize] = []uint16{uint16(bits)}
 			dictSize++
-			c = uint16(dictSize - 1)
+			c = dictSize - 1
 			enlargeIn--
 		case 1:
 			bits = 0
@@ -657,9 +667,9 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 				bits |= tmp * power
 				power <<= 1
 			}
-			dictionary[uint16(dictSize)] = []uint16{f(bits)}
+			dictionary[dictSize] = []uint16{uint16(bits)}
 			dictSize++
-			c = uint16(dictSize - 1)
+			c = dictSize - 1
 			enlargeIn--
 		case 2:
 			res := make([]uint16, 0)
@@ -678,7 +688,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 			entry = make([]uint16, len(dictionary[c]))
 			copy(entry, dictionary[c])
 		} else {
-			if c == uint16(dictSize) {
+			if c == dictSize {
 				entry = make([]uint16, len(w))
 				copy(entry, w)
 				entry = append(entry, w[0])
@@ -691,7 +701,7 @@ func _decompress(length int, resetValue int, getNextVal getNextValFunc) ([]uint1
 		tmp := make([]uint16, len(w))
 		copy(tmp, w)
 		tmp = append(tmp, entry[0])
-		dictionary[uint16(dictSize)] = tmp
+		dictionary[dictSize] = tmp
 		dictSize++
 		enlargeIn--
 
