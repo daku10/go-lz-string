@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1720190105557,
+  "lastUpdate": 1768151477370,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -1476,6 +1476,42 @@ window.BENCHMARK_DATA = {
             "value": 619130,
             "unit": "ns/op",
             "extra": "1881 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b0448f950d930bb2a92b471624589c999dbeb24f",
+          "message": "Merge pull request #42 from golubaca/main\n\nfix: Handle large dictionaries and out-of-bounds reads correctly",
+          "timestamp": "2026-01-12T02:10:51+09:00",
+          "tree_id": "17f4162a771fa734ff48b9d14ce214a97ea519b5",
+          "url": "https://github.com/daku10/go-lz-string/commit/b0448f950d930bb2a92b471624589c999dbeb24f"
+        },
+        "date": 1768151476981,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 1887181,
+            "unit": "ns/op",
+            "extra": "628 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 555568,
+            "unit": "ns/op",
+            "extra": "2120 times\n4 procs"
           }
         ]
       }
