@@ -7,7 +7,9 @@ on:
 permissions:
   deployments: write
   contents: write
-
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   benchmark:
     name: Benchmark Test
