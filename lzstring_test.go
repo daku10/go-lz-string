@@ -652,3 +652,120 @@ func TestDecompressFromEncodedURIComponent(t *testing.T) {
 		})
 	}
 }
+
+// TestConcurrentDecompressFromBase64 verifies that DecompressFromBase64 is safe
+// for concurrent use. This test should be run with -race flag to detect data races.
+func TestConcurrentDecompressFromBase64(t *testing.T) {
+	const goroutines = 100
+	const iterations = 100
+
+	compressed := "BIUwNmD2oZQ=" // "HelloHello"
+	expected := "HelloHello"
+
+	errCh := make(chan error, goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		go func() {
+			for j := 0; j < iterations; j++ {
+				got, err := DecompressFromBase64(compressed)
+				if err != nil {
+					errCh <- fmt.Errorf("unexpected error: %v", err)
+					return
+				}
+				if got != expected {
+					errCh <- fmt.Errorf("got %q, want %q", got, expected)
+					return
+				}
+			}
+			errCh <- nil
+		}()
+	}
+
+	for i := 0; i < goroutines; i++ {
+		if err := <-errCh; err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+// TestConcurrentDecompressFromEncodedURIComponent verifies that
+// DecompressFromEncodedURIComponent is safe for concurrent use.
+func TestConcurrentDecompressFromEncodedURIComponent(t *testing.T) {
+	const goroutines = 100
+	const iterations = 100
+
+	compressed := "BIUwNmD2oZQ" // "HelloHello"
+	expected := "HelloHello"
+
+	errCh := make(chan error, goroutines)
+
+	for i := 0; i < goroutines; i++ {
+		go func() {
+			for j := 0; j < iterations; j++ {
+				got, err := DecompressFromEncodedURIComponent(compressed)
+				if err != nil {
+					errCh <- fmt.Errorf("unexpected error: %v", err)
+					return
+				}
+				if got != expected {
+					errCh <- fmt.Errorf("got %q, want %q", got, expected)
+					return
+				}
+			}
+			errCh <- nil
+		}()
+	}
+
+	for i := 0; i < goroutines; i++ {
+		if err := <-errCh; err != nil {
+			t.Error(err)
+		}
+	}
+}
+
+// TestConcurrentCompressAndDecompress verifies that concurrent compression
+// and decompression operations are safe.
+func TestConcurrentCompressAndDecompress(t *testing.T) {
+	const goroutines = 50
+	const iterations = 50
+
+	inputs := []string{
+		"Hello, world",
+		"あいうえお",
+		"🍎🍇",
+		"ababcabcdabcde",
+	}
+
+	errCh := make(chan error, goroutines*len(inputs))
+
+	for _, input := range inputs {
+		input := input
+		for i := 0; i < goroutines; i++ {
+			go func() {
+				for j := 0; j < iterations; j++ {
+					compressed, err := CompressToBase64(input)
+					if err != nil {
+						errCh <- fmt.Errorf("compress error: %v", err)
+						return
+					}
+					got, err := DecompressFromBase64(compressed)
+					if err != nil {
+						errCh <- fmt.Errorf("decompress error: %v", err)
+						return
+					}
+					if got != input {
+						errCh <- fmt.Errorf("round-trip failed: got %q, want %q", got, input)
+						return
+					}
+				}
+				errCh <- nil
+			}()
+		}
+	}
+
+	for i := 0; i < goroutines*len(inputs); i++ {
+		if err := <-errCh; err != nil {
+			t.Error(err)
+		}
+	}
+}

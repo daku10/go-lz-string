@@ -409,15 +409,20 @@ func DecompressFromBase64(compressed string) (string, error) {
 	return string(utf16.Decode(res)), nil
 }
 
-var baseReverseDic map[string]map[byte]int = make(map[string]map[byte]int)
-
-func getBaseValue(alphabet string, character byte) int {
-	if _, ok := baseReverseDic[alphabet]; !ok {
-		baseReverseDic[alphabet] = make(map[byte]int)
+// baseReverseDic is pre-initialized at package load time to avoid
+// concurrent map writes when multiple goroutines call decompression functions.
+var baseReverseDic = func() map[string]map[byte]int {
+	m := make(map[string]map[byte]int)
+	for _, alphabet := range []string{keyStrBase64, keyStrUriSafe} {
+		m[alphabet] = make(map[byte]int)
 		for i := 0; i < len(alphabet); i++ {
-			baseReverseDic[alphabet][alphabet[i]] = i
+			m[alphabet][alphabet[i]] = i
 		}
 	}
+	return m
+}()
+
+func getBaseValue(alphabet string, character byte) int {
 	return baseReverseDic[alphabet][character]
 }
 
