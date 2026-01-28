@@ -1,5 +1,17 @@
 # Changelog
 
+## [v0.0.7](https://github.com/daku10/go-lz-string/compare/v0.0.6...v0.0.7) - 2026-01-28
+- Bump actions/cache from 3 to 4 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/31
+- Bump golangci/golangci-lint-action from 3 to 4 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/33
+- Bump golangci/golangci-lint-action from 4 to 5 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/34
+- Bump golangci/golangci-lint-action from 5 to 6 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/35
+- Bump github.com/spf13/cobra from 1.8.0 to 1.8.1 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/36
+- Bump goreleaser/goreleaser-action from 5 to 6 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/37
+- fix: Handle large dictionaries and out-of-bounds reads correctly by @golubaca in https://github.com/daku10/go-lz-string/pull/42
+- Bump github.com/google/go-cmp from 0.6.0 to 0.7.0 by @dependabot[bot] in https://github.com/daku10/go-lz-string/pull/38
+- Fix race condition in baseReverseDic initialization by @29ayush in https://github.com/daku10/go-lz-string/pull/45
+- chore: bump packages by @daku10 in https://github.com/daku10/go-lz-string/pull/43
+
 ## [v0.0.6](https://github.com/daku10/go-lz-string/compare/v0.0.5...v0.0.6) - 2024-01-24
 - Bump github.com/spf13/cobra from 1.6.1 to 1.7.0 by @dependabot in https://github.com/daku10/go-lz-string/pull/18
 - Bump actions/checkout from 3 to 4 by @dependabot in https://github.com/daku10/go-lz-string/pull/20
