@@ -472,7 +472,7 @@ func DecompressFromUint8Array(compressed []byte) (string, error) {
 // DecompressFromEncodedURIComponent takes a compressed URL-encoded string and decompresses it into a string.
 // It returns an error if the input is not a valid compressed data.
 func DecompressFromEncodedURIComponent(compressed string) (string, error) {
-	replaced := strings.Replace(compressed, " ", "+", -1)
+	replaced := strings.ReplaceAll(compressed, " ", "+")
 	if replaced == "" {
 		return "", ErrInputBlank
 	}

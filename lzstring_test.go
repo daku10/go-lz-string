@@ -574,7 +574,7 @@ func TestDecompressFromUint8Array(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		t.Run(fmt.Sprint(tt.arg), func(t *testing.T) {
+		t.Run(fmt.Sprintf("want: %v", tt.want), func(t *testing.T) {
 			got, err := DecompressFromUint8Array(tt.arg)
 			if err != nil {
 				t.Fatalf("expected nil, got: %v", err)

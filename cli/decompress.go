@@ -11,14 +11,14 @@ import (
 )
 
 func newDecompressCmd(config *Config) *cobra.Command {
-	var flagMethodEnum methodEnum = methodInvalidUTF16
+	var flagMethodEnum = methodInvalidUTF16
 	var decompressCmd = &cobra.Command{
 		Use:     "decompress",
 		Short:   "decompress input using lz-string",
 		Long:    `Decompress input using lz-string. If no file is specified, input is from standard input. Input format is depends on the compression method. Output format is UTF-8 string`,
 		Example: "  go-lz-string decompress input.txt -m base64 -o output.txt",
 		Args:    cobra.MaximumNArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(cmd *cobra.Command, args []string) (retErr error) {
 			var inputFilename string
 			if len(args) > 0 {
 				inputFilename = args[0]
@@ -36,7 +36,11 @@ func newDecompressCmd(config *Config) *cobra.Command {
 					return err
 				}
 				reader = f
-				defer f.Close()
+				defer func() {
+					if cerr := f.Close(); cerr != nil && retErr == nil {
+						retErr = cerr
+					}
+				}()
 			}
 			var buf *bufio.Writer
 			if outputFilename == "" {
@@ -47,9 +51,17 @@ func newDecompressCmd(config *Config) *cobra.Command {
 					return err
 				}
 				buf = bufio.NewWriter(outputF)
-				defer outputF.Close()
+				defer func() {
+					if cerr := outputF.Close(); cerr != nil && retErr == nil {
+						retErr = cerr
+					}
+				}()
 			}
-			defer buf.Flush()
+			defer func() {
+				if ferr := buf.Flush(); ferr != nil && retErr == nil {
+					retErr = ferr
+				}
+			}()
 			return doDecompress(reader, buf, flagMethodEnum)
 		},
 	}
