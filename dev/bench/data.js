@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1768151656636,
+  "lastUpdate": 1769560458735,
   "repoUrl": "https://github.com/daku10/go-lz-string",
   "entries": {
     "Benchmark": [
@@ -1548,6 +1548,42 @@ window.BENCHMARK_DATA = {
             "value": 538800,
             "unit": "ns/op",
             "extra": "2216 times\n4 procs"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "52423669+daku10@users.noreply.github.com",
+            "name": "daku10",
+            "username": "daku10"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "5b8560cb002fe0e84effd1d76bdcf9f6cb534c73",
+          "message": "Merge pull request #45 from 29ayush/fixrace\n\nFix race condition in baseReverseDic initialization",
+          "timestamp": "2026-01-28T09:33:55+09:00",
+          "tree_id": "4baf49798f7ae85dbf5a9a9385e82cdec3e2df55",
+          "url": "https://github.com/daku10/go-lz-string/commit/5b8560cb002fe0e84effd1d76bdcf9f6cb534c73"
+        },
+        "date": 1769560457894,
+        "tool": "go",
+        "benches": [
+          {
+            "name": "BenchmarkCompress",
+            "value": 1889120,
+            "unit": "ns/op",
+            "extra": "564 times\n4 procs"
+          },
+          {
+            "name": "BenchmarkDecompress",
+            "value": 549248,
+            "unit": "ns/op",
+            "extra": "2121 times\n4 procs"
           }
         ]
       }
